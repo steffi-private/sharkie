@@ -1,0 +1,4 @@
+class PufferFish extends Enemy {
+    
+    
+}

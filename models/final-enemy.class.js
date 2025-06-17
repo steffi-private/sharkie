@@ -1,0 +1,6 @@
+class FinalEnemy extends Enemy {
+ 
+
+
+    
+}
