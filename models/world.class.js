@@ -1,14 +1,17 @@
 class World {
     character = new Character();
-    pufferFish = [
+
+    pufferFishs = [
         new PufferFish(),
         new PufferFish(),
         new PufferFish(),
     ];
-    jellyFish = [
+
+    jellyFishs = [
         new JellyFish(),
         new JellyFish(),
     ];
+
     finalEnemy = new FinalEnemy();
 
     ctx;
@@ -31,19 +34,34 @@ class World {
             this.character.height
         );
 
-        this.pufferFish.forEach(fish => {
-            this.ctx.drawImage(
-                this.fish.img,
-                this.fish.x,
-                this.fish.y,
-                this.fish.width,
-                this.fish.height
+
+        let self = this;
+        this.jellyFishs.forEach(fish => {
+            self.ctx.drawImage(
+                fish.img,
+                fish.x,
+                fish.y,
+                fish.width,
+                fish.height
                 );
             }
         );
 
+        
+        this.pufferFishs.forEach(fish => {
+            self.ctx.drawImage(
+                fish.img,
+                fish.x,
+                fish.y,
+                fish.width,
+                fish.height
+                );
+            }
+        );
 
-        let self = this;
+        
+      
+        
         requestAnimationFrame(function () {
             self.draw();
         });
