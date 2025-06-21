@@ -1,19 +1,18 @@
 class World {
     character = new Character();
-
     pufferFishs = [
         new PufferFish(),
         new PufferFish(),
         new PufferFish(),
     ];
-
     jellyFishs = [
         new JellyFish(),
         new JellyFish(),
     ];
-
     finalEnemy = new FinalEnemy();
-
+    backgroundObjects = [
+        new BackgroundObject("../img/3.Background/Dark/1.png", 0, 0),
+    ];
     ctx;
     canvas;
 
@@ -26,48 +25,35 @@ class World {
 
     draw() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        this.ctx.drawImage(
-            this.character.img,
-            this.character.x,
-            this.character.y,
-            this.character.width,
-            this.character.height
-        );
-
-
+        
+        this.addToMap(this.character);        
+        this.addObjectsToMap(this.jellyFishs);
+        this.addObjectsToMap(this.pufferFishs);
+        this.addObjectsToMap(this.backgroundObjects);
+        
+        //draw() is called repeatedly
         let self = this;
-        this.jellyFishs.forEach(fish => {
-            self.ctx.drawImage(
-                fish.img,
-                fish.x,
-                fish.y,
-                fish.width,
-                fish.height
-                );
-            }
-        );
-
-        
-        this.pufferFishs.forEach(fish => {
-            self.ctx.drawImage(
-                fish.img,
-                fish.x,
-                fish.y,
-                fish.width,
-                fish.height
-                );
-            }
-        );
-
-        
-      
-        
         requestAnimationFrame(function () {
             self.draw();
         });
     }
 
     
+    addObjectsToMap(objects) {
+        objects.forEach(object => {
+            this.addToMap(object);
+        });
+    }
+
+    addToMap(movableObject) {
+        this.ctx.drawImage(
+            movableObject.img,
+            movableObject.x,
+            movableObject.y,
+            movableObject.width,
+            movableObject.height
+        );}
+
     update() {
 
     }
