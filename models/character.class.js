@@ -41,12 +41,10 @@ class Character extends MovableObject {
 
     animate() {
         setInterval(() => {
-            let path = this.IMAGES_IDLE[this.currentImage];
+            let i = this.currentImage % this.IMAGES_IDLE.length;
+            let path = this.IMAGES_IDLE[i];
             this.img = this.imageCache[path];
             this.currentImage++;
-            if (this.currentImage >= this.IMAGES_IDLE.length) {
-                this.currentImage = 0;
-            }
         },1000 /5); // 5 frames per second
     }
 
