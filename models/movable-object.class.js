@@ -4,6 +4,8 @@ class MovableObject {
   img;
   height = 100; 
   width = 150;
+  speed = 0.15; // Default speed
+  otherDirection = false; // Default direction
   imageCache = [];
 
   loadImage(path) {
@@ -19,10 +21,44 @@ class MovableObject {
     });
   }
 
-  move(dx, dy) {
-    this.x += dx;
-    this.y += dy;
+  moveLeft(x, speed) {
+    setInterval(() => {
+            this.x -= speed; // Move left at a constant speed
+            if (this.x < -50) {
+                this.x = 800; // Reset position to the right side of the canvas
+            }
+        }, 1000 / 60); // 60 FPS
   }
+
+   moveRight(x, speed) {
+    setInterval(() => {
+            this.x += speed; // Move left at a constant speed
+            if (this.x > 800) {
+                this.x = -50; // Reset position to the right side of the canvas
+            }
+        }, 1000 / 60); // 60 FPS
+  }
+
+  moveUp(y, speed) {
+    setInterval(() => {
+        this.y -= speed; // Move up at a constant speed
+        if (this.y < -50) {
+            this.y = 500; // Reset position to the top side of the canvas
+        }
+    }
+    , 1000 / 60); // 60 FPS
+  }
+
+   moveDown(y, speed) {
+    setInterval(() => {
+        this.y += speed; // Move up at a constant speed
+        if (this.y > 500) {
+            this.y = -50; // Reset position to the top side of the canvas
+        }
+    }
+    , 1000 / 60); // 60 FPS
+  }
+
 
   getPosition() {
     return { x: this.x, y: this.y };

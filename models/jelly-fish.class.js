@@ -1,6 +1,7 @@
 class JellyFish extends MovableObject {
     width = 100;
     height = 100;
+    spped = 0.15 + Math.random() * 0.45; // Random speed between 0.15 and 0.6
     IMAGES_REGULAR_DAMAGE = [
         '../img/2.Enemy/2.JellyFish/Regular-damage/Lila1.png',
         '../img/2.Enemy/2.JellyFish/Regular-damage/Lila 2.png',
@@ -18,27 +19,17 @@ class JellyFish extends MovableObject {
         this.loadImages(this.IMAGES_REGULAR_DAMAGE);
        
         this.animate();
+        
     }
  
 
     animate(y){
+        this.moveDown(this.x, this.speed);
         setInterval(() => {
             let i = this.currentImage % this.IMAGES_REGULAR_DAMAGE.length;
             let path = this.IMAGES_REGULAR_DAMAGE[i];
             this.img = this.imageCache[path];
             this.currentImage++;
-        },1000 /5); // 5 frames per second
-
-        setInterval(() => {
-            this.y += 0.3;
-            if (this.y < 0) {
-                this.y += 0.3; // Move up at a constant speed
-            } else if (this.y > 400) {
-                this.y -= 0.3; // Move down at a constant speed
-            }
-        }, 1000 / 60); // 60 FPS
-        
-        
+        },1000 /5); // 5 frames per second 
     }
-
 }
