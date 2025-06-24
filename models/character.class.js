@@ -2,6 +2,7 @@ class Character extends MovableObject {
    
     width = 150;
     height = 200;
+    speed = 0.25; // Default speed
     IMAGES_IDLE = [
         '../img/1.Sharkie/1.IDLE/1.png',
         '../img/1.Sharkie/1.IDLE/2.png',
@@ -40,6 +41,8 @@ class Character extends MovableObject {
     }
 
     animate() {
+        this.moveRight(this.x, this.speed);
+
         setInterval(() => {
             let i = this.currentImage % this.IMAGES_IDLE.length;
             let path = this.IMAGES_IDLE[i];

@@ -25,6 +25,7 @@ class JellyFish extends MovableObject {
 
     animate(y){
         this.moveDown(this.x, this.speed);
+        
         setInterval(() => {
             let i = this.currentImage % this.IMAGES_REGULAR_DAMAGE.length;
             let path = this.IMAGES_REGULAR_DAMAGE[i];
