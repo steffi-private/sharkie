@@ -25,13 +25,14 @@ class Character extends MovableObject {
     ];
     IMAGES_SWIM = [
         '../img/1.Sharkie/3.Swim/1.png',
-        '../img/1.Sharkie/3.SWIM/2.png',
-        '../img/1.Sharkie/3.SWIM/3.png',
-        '../img/1.Sharkie/3.SWIM/4.png',
+        '../img/1.Sharkie/3.Swim/2.png',
+        '../img/1.Sharkie/3.Swim/3.png',
+        '../img/1.Sharkie/3.Swim/4.png',
         '../img/1.Sharkie/3.SWIM/5.png',
         '../img/1.Sharkie/3.SWIM/6.png',
     ];
     currentImage = 0;
+    world;
 
     constructor() {
         super().loadImage('../img/1.Sharkie/1.IDLE/1.png');
@@ -41,9 +42,7 @@ class Character extends MovableObject {
     }
 
     animate() {
-        this.moveRight(this.x, this.speed);
-
-        setInterval(() => {
+       setInterval(() => {
             let i = this.currentImage % this.IMAGES_IDLE.length;
             let path = this.IMAGES_IDLE[i];
             this.img = this.imageCache[path];
@@ -51,8 +50,27 @@ class Character extends MovableObject {
         },1000 /5); // 5 frames per second
     }
 
+    swim() {
+        if(this.world.keyboard.RIGHT && this.x < this.world.canvas.width - this.width) {    
+            this.moveRight(this.x, this.speed);
+            this.loadImages(this.IMAGES_SWIM);
+            this.img = this.imageCache[this.IMAGES_SWIM[0]]; // Set initial image for swimming
+            this.currentImage = 0; // Reset currentImage to start from the first frame
+            setInterval(() => {
+                let i = this.currentImage % this.IMAGES_SWIM.length;
+                let path = this.IMAGES_SWIM[i];
+                this.img = this.imageCache[path];
+                this.currentImage++;
+            },1000 /5); // 5 frames per second*/
+        }
+    }
+     
     jump() {
-        // Implement jump logic here
+        if (this.world.keyboard.UP && this.y > 0) { // Only allow jumping if at the bottom
+            this.y -= 50; // Jump up by 50 pixels
+            setTimeout(() => {
+                this.y += 50; // Fall back down after 500 milliseconds
+            }, 500);}
     }
 
     attack() {
