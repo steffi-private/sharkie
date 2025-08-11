@@ -1,46 +1,38 @@
 let canvas; 
-let ctx;
 let world;
-let keyboard;
+let keyboard = new Keyboard();
 
 function init() {
-    canvas = document.getElementById("canvas");
+    canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
-    keyboard = new Keyboard();
+
+    console.log('my Character is', world.character);
 }
 
-window.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight") {
-        keyboard.RIGHT = true;
-    }
-    if (event.key === "ArrowLeft") {
+window.addEventListener("keydown", (event) => {    
+    if (event.key == "ArrowLeft") { // left arrow
         keyboard.LEFT = true;
-    }
-    if (event.key === "ArrowUp") {
+    } else if (event.key == "ArrowRight") { // right arrow
+        keyboard.RIGHT = true; 
+    } else if (event.key == "ArrowUp") { // up arrow
         keyboard.UP = true;
-    }
-    if (event.key === "ArrowDown") {
+    } else if (event.key == "ArrowDown") { // down arrow
         keyboard.DOWN = true;
-    }
-    if (event.key === " ") {
-        keyboard.SPACE = true; 
+    } else if (event.key == " ") { // space bar
+        keyboard.SPACE = true;
     }
 });
 
-window.addEventListener("keyup", (event) => {
-    if (event.key === "ArrowRight") {
-        keyboard.RIGHT = false;
-    }
-    if (event.key === "ArrowLeft") {
+window.addEventListener("keyup", (event) => {    
+    if (event.key == "ArrowLeft") { // left arrow
         keyboard.LEFT = false;
-    }
-    if (event.key === "ArrowUp") {
+    } else if (event.key == "ArrowRight") { // right arrow
+        keyboard.RIGHT = false; 
+    } else if (event.key == "ArrowUp") { // up arrow
         keyboard.UP = false;
-    }
-    if (event.key === "ArrowDown") {
+    } else if (event.key == "ArrowDown") { // down arrow
         keyboard.DOWN = false;
-    }
-    if (event.key === " ") {
+    } else if (event.key == " ") { // space bar
         keyboard.SPACE = false;
     }
 });
