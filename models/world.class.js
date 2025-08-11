@@ -65,15 +65,37 @@ class World {
         });
     }
 
+
     addToMap(movableObject) {
+        if (movableObject.otherDirection) {
+           this.flipImage(movableObject); 
+        }
         this.ctx.drawImage(
             movableObject.img,
             movableObject.x,
             movableObject.y,
             movableObject.width,
             movableObject.height
-        );}
+        )
+        if (movableObject.otherDirection) {
+            this.flipImageBack(movableObject);
+        }
+    }
 
+
+    flipImage(movableObject) {
+        this.ctx.save();
+        this.ctx.translate(movableObject.width, 0);
+        this.ctx.scale(-1, 1);
+        movableObject.x = movableObject.x * -1;
+    }
+
+
+    flipImageBack(movableObject) {
+        movableObject.x = movableObject.x * -1;
+        this.ctx.restore();
+    }
+        
     update() {
 
     }
