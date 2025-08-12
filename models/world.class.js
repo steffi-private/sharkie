@@ -25,7 +25,7 @@ class World {
     ctx;
     canvas;
     keyboard;
-    camera_x;
+    camera_x = 0;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -45,7 +45,7 @@ class World {
         this.addObjectsToMap(this.pufferFishs);
         this.addToMap(this.character);     
         
-        this.ctx.translate(-this.camera_x,0);
+        this.ctx.translate(-this.camera_x, 0);
         
         //draw() is called repeatedly
         let self = this;
