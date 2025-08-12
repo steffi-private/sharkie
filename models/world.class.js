@@ -1,27 +1,11 @@
 class World {
     character = new Character();
-    pufferFishs = [
-        new PufferFish(),
-        new PufferFish(),
-        new PufferFish(),
-    ];
-    jellyFishs = [
-        new JellyFish(),
-        new JellyFish(),
-    ];
-    finalEnemy = new FinalEnemy();
-    backgroundObjects = [
-        new BackgroundObject("../img/3.Background/Layers/5. Water/D1.png", 0, 0),
-        new BackgroundObject("../img/3.Background/Layers/5. Water/D2.png", 720, 0),
-        new BackgroundObject("../img/3.Background/Layers/4.Fondo 2/D1.png", 0, 0),
-        new BackgroundObject("../img/3.Background/Layers/4.Fondo 2/D2.png", 720, 0),
-        new BackgroundObject("../img/3.Background/Layers/3.Fondo 1/D1.png", 0, 0),
-        new BackgroundObject("../img/3.Background/Layers/3.Fondo 1/D2.png", 720, 0),
-        new BackgroundObject("../img/3.Background/Layers/1. Light/1.png", 0, 0),
-        new BackgroundObject("../img/3.Background/Layers/1. Light/2.png", 720, 0),
-        new BackgroundObject("../img/3.Background/Layers/2. Floor/D1.png", 0, 0),
-        new BackgroundObject("../img/3.Background/Layers/2. Floor/D2.png", 720, 0),
-    ];
+    
+    pufferFishs = level1.pufferFishs;
+    jellyFishs = level1.jellyFishs;
+    finalEnemy = level1.finalEnemy;
+    backgroundObjects = level1.backgroundObjects;
+
     ctx;
     canvas;
     keyboard;
