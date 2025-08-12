@@ -1,10 +1,7 @@
 class World {
     character = new Character();
     
-    pufferFishs = level1.pufferFishs;
-    jellyFishs = level1.jellyFishs;
-    finalEnemy = level1.finalEnemy;
-    backgroundObjects = level1.backgroundObjects;
+    level = level1; // Assuming level1 is defined in levels/level1.js
 
     ctx;
     canvas;
@@ -24,9 +21,9 @@ class World {
 
         this.ctx.translate(this.camera_x, 0);
         
-        this.addObjectsToMap(this.backgroundObjects);
-        this.addObjectsToMap(this.jellyFishs);
-        this.addObjectsToMap(this.pufferFishs);
+        this.addObjectsToMap(this.level.backgroundObjects);
+        this.addObjectsToMap(this.level.jellyFishs);
+        this.addObjectsToMap(this.level.pufferFishs);
         this.addToMap(this.character);     
         
         this.ctx.translate(-this.camera_x, 0);
