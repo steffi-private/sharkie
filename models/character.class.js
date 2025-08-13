@@ -57,27 +57,13 @@ class Character extends MovableObject {
             
         setInterval(() => {
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.swim();
+                this.playAnimation(this.IMAGES_SWIM);
             } else {
-                this.idle();
+                this.playAnimation(this.IMAGES_IDLE);
             }            
         }, 1000 / 5); // 5 frames per second
     }
-
-    idle() {
-        let i = this.currentImage % this.IMAGES_IDLE.length;
-        let path = this.IMAGES_IDLE[i];
-        this.img = this.imageCache[path];
-        this.currentImage++;
-    }
-
-    swim() {
-        let i = this.currentImage % this.IMAGES_SWIM.length;
-        let path = this.IMAGES_SWIM[i];
-        this.img = this.imageCache[path];
-        this.currentImage++;
-    }
-     
+    
     jump() {
         if (this.world.keyboard.UP) {
             this.y -= 50; // Jump up by 50 pixels

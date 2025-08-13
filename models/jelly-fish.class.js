@@ -27,10 +27,7 @@ class JellyFish extends MovableObject {
         this.moveDown(this.x, this.speed);
         
         setInterval(() => {
-            let i = this.currentImage % this.IMAGES_REGULAR_DAMAGE.length;
-            let path = this.IMAGES_REGULAR_DAMAGE[i];
-            this.img = this.imageCache[path];
-            this.currentImage++;
+           this.playAnimation(this.IMAGES_REGULAR_DAMAGE);
         },1000 /5); // 5 frames per second 
     }
 }

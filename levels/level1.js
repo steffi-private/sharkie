@@ -3,12 +3,10 @@ const level1 = new Level(
         new PufferFish(),
         new PufferFish(),
         new PufferFish(),
-    ],
-    [
         new JellyFish(),
         new JellyFish(),
+        new FinalEnemy()
     ],
-    new FinalEnemy(),
     [
         new BackgroundObject("../img/3.Background/Layers/5. Water/D1.png", 0, 0),
         new BackgroundObject("../img/3.Background/Layers/5. Water/D2.png", 720, 0),
