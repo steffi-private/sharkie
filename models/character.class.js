@@ -1,5 +1,6 @@
 class Character extends MovableObject {
-   
+    x = 100;
+    y = 250;
     width = 150;
     height = 200;
     speed =  10;// Default speed
@@ -38,7 +39,7 @@ class Character extends MovableObject {
         super().loadImage('../img/1.Sharkie/1.IDLE/1.png');
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_SWIM);
-       
+        this.applyGravity();
         this.animate();
     }
 
@@ -46,12 +47,17 @@ class Character extends MovableObject {
 
         setInterval(() => {
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) { 
-                this.x += this.speed;
-                this.otherDirection = false; // Facing right
+                this.moveRight();
+                 this.otherDirection = false; // Facing right
             } else if (this.world.keyboard.LEFT && this.x > 100) {
-                this.x -= this.speed;
-                this.otherDirection = true; // Facing left
+                this.moveLeft();
+                 this.otherDirection = true; // Facing left
             }
+            if (this.world.keyboard.UP && this.speedY < 1 && this.y > 50) { // Allow jumping only if speedY is less than 1 & y is above a certain threshold
+                this.jump();
+            }
+
+
             this.world.camera_x = -this.x + 100; // Adjust camera position based on character's x position
             }, 1000 / 20); // 20 frames per second
             
@@ -64,13 +70,7 @@ class Character extends MovableObject {
         }, 1000 / 5); // 5 frames per second
     }
     
-    jump() {
-        if (this.world.keyboard.UP) {
-            this.y -= 50; // Jump up by 50 pixels
-            setTimeout(() => {
-                this.y += 50; // Fall back down after 500 milliseconds
-            }, 500);}
-    }
+    
 
     attack() {
         // Implement attack logic here

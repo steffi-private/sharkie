@@ -24,8 +24,13 @@ class PufferFish extends MovableObject {
     
 
     animate(){
-        this.moveLeft(this.x, this.speed);
-
+        setInterval(() => {
+            this.moveLeft();
+            if (this.x < -50) {
+                this.x = 2600; // Reset position to the right side of the canvas
+            }
+        }, 1000 / 60); // 60 FPS
+        
         setInterval(() => {
             this.playAnimation(this.IMAGES_SWIM);
         }, 1000 / 5); // 5 frames per second

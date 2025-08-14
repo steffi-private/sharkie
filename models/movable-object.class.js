@@ -1,12 +1,14 @@
 class MovableObject {
-  x = 250;
-  y = 250;
+  x = 0; // Default x position
+  y = 0; // Default y position
   img;
   height = 100; 
   width = 150;
   speed = 0.15; // Default speed
   otherDirection = false; // Default direction
   imageCache = [];
+  speedY = 0; // Vertical speed for gravity effect
+  acceleration = 1.5; // Gravity acceleration
 
   loadImage(path) {
     this.img = new Image();
@@ -28,27 +30,30 @@ class MovableObject {
     this.currentImage++;
   }
 
-  moveLeft(x, speed) {
+  applyGravity() {
     setInterval(() => {
-            this.x -= speed; // Move left at a constant speed
-            if (this.x < -50) {
-                this.x = 800; // Reset position to the right side of the canvas
-            }
-        }, 1000 / 60); // 60 FPS
+      if(this.isAboveGround() || this.speedY > 0) {
+      this.y-= this.speedY;
+      this.speedY -= this.acceleration; 
+      } 
+    } , 1000 / 25); // 25 FPS
   }
 
-   moveRight(x, speed) {
-    setInterval(() => {
-            this.x += speed; // Move left at a constant speed
-            if (this.x > 800) {
-                this.x = -50; // Reset position to the right side of the canvas
-            }
-        }, 1000 / 60); // 60 FPS
+  isAboveGround() {
+    return this.y < 250; // Assuming 250 is the ground level
   }
 
-  moveUp(y, speed) {
+  moveLeft() {
+    this.x -= this.speed;
+  }
+
+  moveRight() { 
+    this.x += this.speed;
+  }
+
+  moveUp() {
     setInterval(() => {
-        this.y -= speed; // Move up at a constant speed
+        this.y -= this.speed; // Move up at a constant speed
         if (this.y < -50) {
             this.y = 500; // Reset position to the top side of the canvas
         }
@@ -56,9 +61,9 @@ class MovableObject {
     , 1000 / 60); // 60 FPS
   }
 
-   moveDown(y, speed) {
+   moveDown() {
     setInterval(() => {
-        this.y += speed; // Move up at a constant speed
+        this.y += this.speed; // Move up at a constant speed
         if (this.y > 500) {
             this.y = -50; // Reset position to the top side of the canvas
         }
@@ -66,7 +71,10 @@ class MovableObject {
     , 1000 / 60); // 60 FPS
   }
 
-
+  jump() {
+    this.speedY = 20; // Set vertical speed for jumping
+  }
+  
   getPosition() {
     return { x: this.x, y: this.y };
   }

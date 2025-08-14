@@ -23,8 +23,8 @@ class JellyFish extends MovableObject {
     }
  
 
-    animate(y){
-        this.moveDown(this.x, this.speed);
+    animate(){
+        this.moveDown();
         
         setInterval(() => {
            this.playAnimation(this.IMAGES_REGULAR_DAMAGE);
