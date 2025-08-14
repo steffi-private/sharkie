@@ -22,9 +22,13 @@ class JellyFish extends MovableObject {
         
     }
  
-
     animate(){
-        this.moveDown();
+        setInterval(() => {
+            this.moveDown();
+            if (this.y > 500) {
+                this.y = -50; // Reset position to the top side of the canvas
+            }
+        }, 1000 / 60); // 60 FPS
         
         setInterval(() => {
            this.playAnimation(this.IMAGES_REGULAR_DAMAGE);

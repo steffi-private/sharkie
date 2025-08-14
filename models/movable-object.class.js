@@ -51,24 +51,8 @@ class MovableObject {
     this.x += this.speed;
   }
 
-  moveUp() {
-    setInterval(() => {
-        this.y -= this.speed; // Move up at a constant speed
-        if (this.y < -50) {
-            this.y = 500; // Reset position to the top side of the canvas
-        }
-    }
-    , 1000 / 60); // 60 FPS
-  }
-
-   moveDown() {
-    setInterval(() => {
-        this.y += this.speed; // Move up at a constant speed
-        if (this.y > 500) {
-            this.y = -50; // Reset position to the top side of the canvas
-        }
-    }
-    , 1000 / 60); // 60 FPS
+  moveDown() {
+    this.y += this.speed; // Move up at a constant speed
   }
 
   jump() {
