@@ -14,6 +14,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        this.checkCollisions();
     }
 
     draw() {
@@ -39,6 +40,23 @@ class World {
         this.character.world = this;
     }
 
+    checkCollisions() {
+        setInterval(() => {
+            this.level.jellyFishs.forEach(jellyFish => {
+                if (this.character.isColliding(jellyFish)) {
+                    console.log('Collision with jelly fish'); //this.character.hit(10);
+                }
+            });
+
+            this.level.pufferFishs.forEach(pufferFish => {
+                if (this.character.isColliding(pufferFish)) {
+                    console.log('Collision with puffer fish');//this.character.hit(20);
+                }
+            });
+
+        }, 250); // Check collisions every 250 milliseconds
+    }
+
     
     addObjectsToMap(objects) {
         objects.forEach(object => {
@@ -51,13 +69,8 @@ class World {
         if (movableObject.otherDirection) {
            this.flipImage(movableObject); 
         }
-        this.ctx.drawImage(
-            movableObject.img,
-            movableObject.x,
-            movableObject.y,
-            movableObject.width,
-            movableObject.height
-        )
+        movableObject.draw(this.ctx);
+        movableObject.drawFrame(this.ctx);
         if (movableObject.otherDirection) {
             this.flipImageBack(movableObject);
         }

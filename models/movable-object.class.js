@@ -23,6 +23,20 @@ class MovableObject {
     });
   }
 
+  draw(ctx) {
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+  }
+
+  drawFrame(ctx) {
+    if (this instanceof Character || this instanceof PufferFish || this instanceof JellyFish) {
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "yellow";
+      ctx.rect(this.x, this.y, this.width, this.height);
+      ctx.stroke();
+    }
+  }
+
   playAnimation(images) {
     let i = this.currentImage % images.length;
     let path = images[i];
@@ -57,6 +71,13 @@ class MovableObject {
 
   jump() {
     this.speedY = 20; // Set vertical speed for jumping
+  }
+
+  isColliding(movableObject) {
+    return this.x + this.width > movableObject.x &&
+      this.y + this.height > movableObject.y &&
+      this.x < movableObject.x &&
+      this.y < movableObject.y + movableObject.height;
   }
   
   getPosition() {
