@@ -9,6 +9,7 @@ class MovableObject {
   imageCache = [];
   speedY = 0; // Vertical speed for gravity effect
   acceleration = 1.5; // Gravity acceleration
+  energy = 100; // Default energy level
 
   loadImage(path) {
     this.img = new Image();
@@ -78,6 +79,18 @@ class MovableObject {
       this.y + this.height > movableObject.y &&
       this.x < movableObject.x &&
       this.y < movableObject.y + movableObject.height;
+  }
+
+  isHurt(damage) {
+    this.energy -= damage; // Reduce energy by the damage amount  
+    if (this.energy < 0) {
+      this.energy = 0; // Ensure energy doesn't go below zero
+    }
+    console.log(`Energy after hurt: ${this.energy}`);
+  }
+
+  isDead() {
+        return this.energy <= 0;
   }
   
   getPosition() {

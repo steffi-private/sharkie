@@ -43,21 +43,31 @@ class World {
     checkCollisions() {
         setInterval(() => {
             this.level.jellyFishs.forEach(jellyFish => {
-                if (this.character.isColliding(jellyFish)) {
-                    console.log('Collision with jelly fish'); //this.character.hit(10);
+                if (this.character.isColliding(jellyFish)) { 
+                    this.character.isHurt(10);
+                    if (this.character.isDead()) {
+                        this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
+                    } else {
+                    this.character.playAnimation(this.character.IMAGES_HURT_POISONED);
+                    }
                 }
             });
 
             this.level.pufferFishs.forEach(pufferFish => {
                 if (this.character.isColliding(pufferFish)) {
-                    console.log('Collision with puffer fish');//this.character.hit(20);
+                    this.character.isHurt(20);
+                    if (this.character.isDead()) {
+                        this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
+                    } else {
+                    this.character.playAnimation(this.character.IMAGES_HURT_ELECTRO);
+                    }
                 }
             });
 
         }, 250); // Check collisions every 250 milliseconds
     }
 
-    
+   
     addObjectsToMap(objects) {
         objects.forEach(object => {
             this.addToMap(object);
