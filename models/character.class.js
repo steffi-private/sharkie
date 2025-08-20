@@ -90,7 +90,19 @@ class Character extends MovableObject {
 
         setInterval(() => {
 
+            /* Momentan in world.class checkCollisions() gelöst: 
             
+                    if (this.isDead()) {
+                        this.playAnimation(this.IMAGES_DEAD_POISONED);
+                    } else {
+                        this.playAnimation(this.IMAGES_HURT_POISONED);
+                    }
+                    }         ebenso für puffer fish & ELEKTRO
+                    
+                    if (this.isHurt()) {
+                        this.playAnimation(this.IMAGES_HURT_ELECTRO);
+                    }
+            */
             
 
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) { 

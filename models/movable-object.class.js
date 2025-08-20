@@ -10,6 +10,7 @@ class MovableObject {
   speedY = 0; // Vertical speed for gravity effect
   acceleration = 1.5; // Gravity acceleration
   energy = 100; // Default energy level
+  lastHit = 0; // Timestamp of the last hit to prevent multiple hits in a short time
 
   loadImage(path) {
     this.img = new Image();
@@ -81,12 +82,19 @@ class MovableObject {
       this.y < movableObject.y + movableObject.height;
   }
 
-  isHurt(damage) {
+  isHit(damage) {
     this.energy -= damage; // Reduce energy by the damage amount  
     if (this.energy < 0) {
       this.energy = 0; // Ensure energy doesn't go below zero
     }
-    console.log(`Energy after hurt: ${this.energy}`);
+  console.log(`Energy after hurt: ${this.energy}`);
+    this.lastHit = Date.now(); // Update the last hit timestamp
+  console.log(`Last hit timestamp: ${this.lastHit}`);
+  }
+
+  isHurt() {
+    let timeSinceLastHit = Date.now() - this.lastHit;
+    return timeSinceLastHit < 1000 && this.energy > 0; // Check if the last hit was within the last second and energy is above zero
   }
 
   isDead() {

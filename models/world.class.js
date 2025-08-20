@@ -44,7 +44,7 @@ class World {
         setInterval(() => {
             this.level.jellyFishs.forEach(jellyFish => {
                 if (this.character.isColliding(jellyFish)) { 
-                    this.character.isHurt(10);
+                    this.character.isHit(10);
                     if (this.character.isDead()) {
                         this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
                     } else {
@@ -55,7 +55,7 @@ class World {
 
             this.level.pufferFishs.forEach(pufferFish => {
                 if (this.character.isColliding(pufferFish)) {
-                    this.character.isHurt(20);
+                    this.character.isHit(20);
                     if (this.character.isDead()) {
                         this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
                     } else {
