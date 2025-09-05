@@ -5,7 +5,9 @@ class World {
     canvas;
     keyboard;
     camera_x = 0;
-    statusbar = new Statusbar();
+    statusbarEnergy = new StatusbarEnergy();
+    statusbarCoin = new StatusbarCoin();
+    statusbarPoisson = new StatusbarPoisson();
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -27,10 +29,13 @@ class World {
         this.addObjectsToMap(this.level.jellyFishs);
         this.addObjectsToMap(this.level.pufferFishs);
         this.addToMap(this.character); 
-        this.addToMap(this.statusbar); 
-       
-        
+              
         this.ctx.translate(-this.camera_x, 0);
+
+        //fixed objects
+        this.addToMap(this.statusbarEnergy); 
+        this.addToMap(this.statusbarCoin); 
+        this.addToMap(this.statusbarPoisson);
         
         //draw() is called repeatedly
         let self = this;
@@ -47,7 +52,8 @@ class World {
         setInterval(() => {
             this.level.jellyFishs.forEach(jellyFish => {
                 if (this.character.isColliding(jellyFish)) { 
-                    this.character.isHit(10);
+                    this.character.isHit(1);
+                    this.statusbarEnergy.setPercentage(this.character.energy);
                     if (this.character.isDead()) {
                         this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
                     } else {
@@ -58,7 +64,8 @@ class World {
 
             this.level.pufferFishs.forEach(pufferFish => {
                 if (this.character.isColliding(pufferFish)) {
-                    this.character.isHit(20);
+                    this.character.isHit(2);
+                    this.statusbarEnergy.setPercentage(this.character.energy);
                     if (this.character.isDead()) {
                         this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
                     } else {
