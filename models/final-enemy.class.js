@@ -7,7 +7,7 @@ class FinalEnemy extends MovableObject {
     y = 100; // Initial y position
 
     speed =  10;// Default speed
-    currentImage = 0;
+    
     
     IMAGES_FLOATING = [
         'img/2.Enemy/3.FinalEnemy/2.floating/1.png',

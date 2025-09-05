@@ -9,7 +9,7 @@ class PufferFish extends MovableObject {
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim4.png',
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim5.png',
     ];
-    currentImage = 0;
+    
 
 
      constructor() {

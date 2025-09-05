@@ -1,34 +1,13 @@
-class MovableObject {
-  x = 0; // Default x position
-  y = 0; // Default y position
-  img;
-  height = 100; 
-  width = 150;
+class MovableObject extends DrawableObject {
   speed = 0.15; // Default speed
   otherDirection = false; // Default direction
-  imageCache = [];
   speedY = 0; // Vertical speed for gravity effect
   acceleration = 1.5; // Gravity acceleration
   energy = 100; // Default energy level
   lastHit = 0; // Timestamp of the last hit to prevent multiple hits in a short time
+ 
 
-  loadImage(path) {
-    this.img = new Image();
-    this.img.src = path;
-  }
-
-  loadImages(pathsArray) {
-    pathsArray.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
-  }
-
-  draw(ctx) {
-    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-  }
-
+  
   drawFrame(ctx) {
     if (this instanceof Character || this instanceof PufferFish || this instanceof JellyFish) {
       ctx.beginPath();

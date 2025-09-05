@@ -9,7 +9,7 @@ class JellyFish extends MovableObject {
         '../img/2.Enemy/2.JellyFish/Regular-damage/Lila 4.png',
         
     ];
-    currentImage = 0;
+    
 
 
     constructor() {
