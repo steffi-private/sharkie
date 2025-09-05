@@ -1,12 +1,11 @@
 class World {
     character = new Character();
-    
     level = level1; // Assuming level1 is defined in levels/level1.js
-
     ctx;
     canvas;
     keyboard;
     camera_x = 0;
+    statusbar = new Statusbar();
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -20,12 +19,16 @@ class World {
     draw() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
+       
+
         this.ctx.translate(this.camera_x, 0);
         
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.jellyFishs);
         this.addObjectsToMap(this.level.pufferFishs);
-        this.addToMap(this.character);     
+        this.addToMap(this.character); 
+        this.addToMap(this.statusbar); 
+       
         
         this.ctx.translate(-this.camera_x, 0);
         
@@ -80,12 +83,13 @@ class World {
            this.flipImage(movableObject); 
         }
         movableObject.draw(this.ctx);
-        movableObject.drawFrame(this.ctx);
+        if (typeof movableObject.drawFrame === 'function') {//check if drawFrame exists before calling it
+            movableObject.drawFrame(this.ctx);
+        }
         if (movableObject.otherDirection) {
             this.flipImageBack(movableObject);
         }
     }
-
 
     flipImage(movableObject) {
         this.ctx.save();

@@ -3,6 +3,7 @@ class Level {
     jellyFishs;
     finalEnemy; 
     backgroundObjects;
+    
     level_end_x = 2200; // The x position where the level ends
 
     constructor(pufferFishs, jellyFishs, finalEnemy, backgroundObjects) {
@@ -10,6 +11,6 @@ class Level {
         this.jellyFishs = jellyFishs || [];
         this.finalEnemy = finalEnemy || [];
         this.backgroundObjects = backgroundObjects || [];
-
+        
     }
 }

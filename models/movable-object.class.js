@@ -8,15 +8,7 @@ class MovableObject extends DrawableObject {
  
 
   
-  drawFrame(ctx) {
-    if (this instanceof Character || this instanceof PufferFish || this instanceof JellyFish) {
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "yellow";
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.stroke();
-    }
-  }
+ 
 
   playAnimation(images) {
     let i = this.currentImage % images.length;
