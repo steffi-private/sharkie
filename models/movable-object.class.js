@@ -58,9 +58,7 @@ class MovableObject extends DrawableObject {
     if (this.energy < 0) {
       this.energy = 0; // Ensure energy doesn't go below zero
     }
-  console.log(`Energy after hurt: ${this.energy}`);
     this.lastHit = Date.now(); // Update the last hit timestamp
-  console.log(`Last hit timestamp: ${this.lastHit}`);
   }
 
   isHurt() {
@@ -69,7 +67,7 @@ class MovableObject extends DrawableObject {
   }
 
   isDead() {
-        return this.energy <= 0;
+    return this.energy <= 0;
   }
   
   getPosition() {
