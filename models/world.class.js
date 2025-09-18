@@ -62,7 +62,7 @@ class World {
             
             
 
-        }, 250); 
+        }, 200); 
 
 
     }
@@ -97,12 +97,12 @@ class World {
 
     checkThrowObjects() {
         if(this.keyboard.D) {
-                let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+                let bottle = new ThrowableObject(this.character.x +90, this.character.y + 70);
                 this.throwableObjects.push(bottle);
             }
     }
     
-
+d
     
 
     addObjectsToMap(objects) {
