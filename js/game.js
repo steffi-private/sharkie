@@ -5,11 +5,10 @@ let keyboard = new Keyboard();
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
-
-    console.log('my Character is', world.character);
 }
 
-window.addEventListener("keydown", (event) => {    
+window.addEventListener("keydown", (event) => {  
+        
     if (event.key == "ArrowLeft") { // left arrow
         keyboard.LEFT = true;
     } else if (event.key == "ArrowRight") { // right arrow
@@ -20,6 +19,8 @@ window.addEventListener("keydown", (event) => {
         keyboard.DOWN = true;
     } else if (event.key == " ") { // space bar
         keyboard.SPACE = true;
+    } else if (event.key == "d" || event.key =="D") { // d key
+        keyboard.D = true;
     }
 });
 
@@ -34,5 +35,7 @@ window.addEventListener("keyup", (event) => {
         keyboard.DOWN = false;
     } else if (event.key == " ") { // space bar
         keyboard.SPACE = false;
+    } else if (event.key == "d" || event.key =="D") { // d key
+        keyboard.D = false;
     }
 });

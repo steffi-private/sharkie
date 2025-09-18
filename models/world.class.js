@@ -8,6 +8,8 @@ class World {
     statusbarEnergy = new StatusbarEnergy();
     statusbarCoin = new StatusbarCoin();
     statusbarPoisson = new StatusbarPoisson();
+    throwableObjects = [new ThrowableObject()];
+    
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -15,7 +17,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        this.checkCollisions();
+        this.run();
     }
 
     draw() {
@@ -28,6 +30,7 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.jellyFishs);
         this.addObjectsToMap(this.level.pufferFishs);
+        this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character); 
               
         this.ctx.translate(-this.camera_x, 0);
@@ -48,36 +51,60 @@ class World {
         this.character.world = this;
     }
 
-    checkCollisions() {
+    run() {
+       
         setInterval(() => {
-            this.level.jellyFishs.forEach(jellyFish => {
-                if (this.character.isColliding(jellyFish)) { 
-                    this.character.isHit(1);
-                    this.statusbarEnergy.setPercentage(this.character.energy);
-                    if (this.character.isDead()) {
-                        this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
-                    } else {
-                    this.character.playAnimation(this.character.IMAGES_HURT_POISONED);
-                    }
-                }
-            });
 
-            this.level.pufferFishs.forEach(pufferFish => {
-                if (this.character.isColliding(pufferFish)) {
-                    this.character.isHit(2);
-                    this.statusbarEnergy.setPercentage(this.character.energy);
-                    if (this.character.isDead()) {
-                        this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
-                    } else {
-                    this.character.playAnimation(this.character.IMAGES_HURT_ELECTRO);
-                    }
-                }
-            });
+            this.checkCollisionsWithJellyFishs();
+            this.checkCollisionsWithPufferFishs();
 
-        }, 250); // Check collisions every 250 milliseconds
+            this.checkThrowObjects();
+            
+            
+
+        }, 250); 
+
+
     }
 
-   
+   checkCollisionsWithJellyFishs() {
+        this.level.jellyFishs.forEach(jellyFish => {
+            if (this.character.isColliding(jellyFish)) { 
+                this.character.isHit(1);
+                this.statusbarEnergy.setPercentage(this.character.energy);
+                if (this.character.isDead()) {
+                    this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
+                } else {
+                this.character.playAnimation(this.character.IMAGES_HURT_POISONED);
+                }
+            }
+        });
+    }
+
+    checkCollisionsWithPufferFishs() {
+        this.level.pufferFishs.forEach(pufferFish => {
+            if (this.character.isColliding(pufferFish)) {
+                this.character.isHit(2);
+                this.statusbarEnergy.setPercentage(this.character.energy);
+                if (this.character.isDead()) {
+                    this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
+                } else {
+                this.character.playAnimation(this.character.IMAGES_HURT_ELECTRO);
+                }
+            }
+        });
+    }
+
+    checkThrowObjects() {
+        if(this.keyboard.D) {
+                let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+                this.throwableObjects.push(bottle);
+            }
+    }
+    
+
+    
+
     addObjectsToMap(objects) {
         objects.forEach(object => {
             this.addToMap(object);
