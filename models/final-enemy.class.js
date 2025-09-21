@@ -8,7 +8,21 @@ class FinalEnemy extends MovableObject {
 
     speed =  10;// Default speed
     
+    hadFirstContact = false;
     
+    IMAGES_INTRO = [
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/1.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/2.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/3.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/4.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/5.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/6.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/7.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/8.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/9.png',
+        'img/2.Enemy/3.FinalEnemy/1.Introduce/10.png'
+    ];
+
     IMAGES_FLOATING = [
         'img/2.Enemy/3.FinalEnemy/2.floating/1.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/2.png',
@@ -28,18 +42,25 @@ class FinalEnemy extends MovableObject {
     constructor() {
         super().loadImage(this.IMAGES_FLOATING[0]);
         this.loadImages(this.IMAGES_FLOATING);
+        this.loadImages(this.IMAGES_INTRO);
         
-        
-
-        console.log('FinalEnemy created at position:', this.x, this.y);
 
         this.animate();
     }
 
     animate() {
-        
+        let i = 0;
         setInterval(() => {
-            this.playAnimation(this.IMAGES_FLOATING);
+            if (i < 10) {
+                this.playAnimation(this.IMAGES_INTRO);
+            } else {
+                this.playAnimation(this.IMAGES_FLOATING);
+            }
+            i++;
+            if (world.character.x > 1600 && !this.hadFirstContact) {
+                i = 0;
+                this.hadFirstContact = true;
+            }
         }, 1000 / 5); // 5 frames per second
     }
     
