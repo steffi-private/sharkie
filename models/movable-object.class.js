@@ -6,11 +6,7 @@ class MovableObject extends DrawableObject {
   energy = 100; // Default energy level
   lastHit = 0; // Timestamp of the last hit to prevent multiple hits in a short time
  
-
-  
- 
-
-  playAnimation(images) {
+ playAnimation(images) {
     let i = this.currentImage % images.length;
     let path = images[i];
     this.img = this.imageCache[path];
@@ -52,7 +48,7 @@ class MovableObject extends DrawableObject {
 
   isColliding(movableObject) {
     return this.x + this.width > movableObject.x &&
-      this.y + this.height > movableObject.y &&
+      this.y + this.height - 100 > movableObject.y &&
       this.x < movableObject.x &&
       this.y < movableObject.y + movableObject.height;
   }

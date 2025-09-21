@@ -102,8 +102,6 @@ class World {
             }
     }
     
-d
-    
 
     addObjectsToMap(objects) {
         objects.forEach(object => {
