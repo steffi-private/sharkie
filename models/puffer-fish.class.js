@@ -1,6 +1,7 @@
 class PufferFish extends MovableObject {
     width = 100;
     height = 100;
+    otherDirection = false;
     speed = 0.15 + Math.random() * 0.45; // Random speed between 0.15 and 0.4
     IMAGES_SWIM = [
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim1.png',
@@ -17,17 +18,23 @@ class PufferFish extends MovableObject {
         this.x = Math.random() * 800; // Random x position within canvas width
         this.y = Math.random() * 600; // Random y position within canvas height
         this.loadImages(this.IMAGES_SWIM);
-
         this.animate();
-        
     }
     
 
     animate(){
+        let speed = this.speed;
+        let direction = -1; // 1 for left, -1 for right
+
         setInterval(() => {
-            this.moveLeft();
-            if (this.x < -50) {
-                this.x = 2600; // Reset position to the right side of the canvas
+            this.x += speed * direction;
+            // Change direction if the fish reaches the canvas edges
+            if (this.x <=20) {
+                direction = 1; // change direction when left side is reached
+                this.otherDirection = true; // Facing right
+            } else if (this.x >=2500) {
+                direction = -1; // change direction when right side is reached
+                this.otherDirection = false; // Facing left
             }
         }, 1000 / 60); // 60 FPS
         

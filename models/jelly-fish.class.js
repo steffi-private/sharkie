@@ -17,7 +17,6 @@ class JellyFish extends MovableObject {
         this.y = Math.random() * 600; // Random y position within canvas height
         this.loadImages(this.IMAGES_REGULAR_DAMAGE);
         this.animate();
-        
     }
  
     animate(){
@@ -26,7 +25,7 @@ class JellyFish extends MovableObject {
 
         setInterval(() => {
             this.y += speed * direction;
-            if (this.y >= 400) {
+            if (this.y >= 390) {
                 direction = -1; // change direction when bottom limit is reached
             } else if (this.y <= 10) {
                 direction = 1; // change direction when top limit is reached
