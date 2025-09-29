@@ -10,7 +10,6 @@ class World {
     statusbarPoisson = new StatusbarPoisson();
     throwableObjects = [new ThrowableObject()];
     
-
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
@@ -30,6 +29,7 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.jellyFishs);
         this.addObjectsToMap(this.level.pufferFishs);
+        this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character); 
               
