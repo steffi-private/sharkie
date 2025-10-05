@@ -39,5 +39,10 @@ const level1 = new Level(
         new Coin(350, 200),
         new Coin(400, 250),
         new Coin(350, 300),
+    ],
+    [
+        new ThrowableObject(550, 320, { collectible: true, thrown: false }),
+        new ThrowableObject(900, 280, { collectible: true, thrown: false }),
+        new ThrowableObject(1300, 300, { collectible: true, thrown: false })
     ]
 );

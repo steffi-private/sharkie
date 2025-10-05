@@ -31,6 +31,9 @@ class World {
         this.addObjectsToMap(this.level.pufferFishs);
         this.addObjectsToMap(this.level.finalEnemy);
         this.addObjectsToMap(this.level.coins);
+        if (this.level.collectibles) {
+            this.addObjectsToMap(this.level.collectibles);
+        }
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character); 
               
