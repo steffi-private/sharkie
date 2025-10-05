@@ -9,6 +9,7 @@ class World {
     statusbarCoin = new StatusbarCoin();
     statusbarPoisson = new StatusbarPoisson();
     throwableObjects = [];
+    lastThrowTime = 0; // Cooldown for throwing bottles
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -91,9 +92,18 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.D) {
-            let bottle = new ThrowableObject(this.character.x + 90, this.character.y + 70);
-            this.throwableObjects.push(bottle);
+        const currentTime = Date.now();
+        const throwCooldown = 500; // 500ms cooldown between throws
+        
+        if (this.keyboard.D && currentTime - this.lastThrowTime > throwCooldown) {
+            // Check if we have poison bottles to throw
+            if (this.statusbarPoisson.numberOfPoissons > 0) {
+                let bottle = new ThrowableObject(this.character.x + 90, this.character.y + 70);
+                bottle.world = this; // Set world reference for onThrow function
+                bottle.onThrow(); // Reduce poison status bar when throwing
+                this.throwableObjects.push(bottle);
+                this.lastThrowTime = currentTime; // Update last throw time
+            }
         }
     }
 

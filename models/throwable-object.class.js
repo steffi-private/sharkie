@@ -27,6 +27,16 @@ class ThrowableObject extends CollectableObject {
         }, 1000 / 25); // 25 FPS
     }
 
+    // When thrown, decrement poison status bar
+    onThrow() {
+        if (this.world && this.world.statusbarPoisson && typeof this.world.statusbarPoisson.setnumberOfPoissons === 'function') {
+            const current = this.world.statusbarPoisson.numberOfPoissons || 0;
+            if (current > 0) {
+                this.world.statusbarPoisson.setnumberOfPoissons(current - 1);
+            }
+        }
+    }
+
     // When collected, increment poison status bar
     onCollect(world) {
         if (world && world.statusbarPoisson && typeof world.statusbarPoisson.setnumberOfPoissons === 'function') {
