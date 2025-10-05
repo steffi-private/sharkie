@@ -40,11 +40,10 @@ class FinalEnemy extends MovableObject {
     ];
 
     constructor() {
-        super().loadImage(this.IMAGES_FLOATING[0]);
+        super();
+        this.loadImage(this.IMAGES_FLOATING[0]);
         this.loadImages(this.IMAGES_FLOATING);
         this.loadImages(this.IMAGES_INTRO);
-        
-
         this.animate();
     }
 

@@ -20,7 +20,7 @@ class ThrowableObject extends MovableObject {
             this.x += 10; // Move right at a constant speed
         }, 1000 / 25); // 25 FPS
     }
-d
+
 
 
 }
