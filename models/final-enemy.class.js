@@ -1,15 +1,15 @@
 class FinalEnemy extends MovableObject {
-    
+
     width = 300;
     height = 400;
 
     x = 2400; // Initial x position
     y = 100; // Initial y position
 
-    speed =  10;// Default speed
-    
+    speed = 10;// Default speed
+
     hadFirstContact = false;
-    
+
     IMAGES_INTRO = [
         'img/2.Enemy/3.FinalEnemy/1.Introduce/1.png',
         'img/2.Enemy/3.FinalEnemy/1.Introduce/2.png',
@@ -32,11 +32,11 @@ class FinalEnemy extends MovableObject {
         'img/2.Enemy/3.FinalEnemy/2.floating/6.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/7.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/8.png',
-        'img/2.Enemy/3.FinalEnemy/2.floating/9.png',   
+        'img/2.Enemy/3.FinalEnemy/2.floating/9.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/10.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/11.png',
         'img/2.Enemy/3.FinalEnemy/2.floating/12.png',
-        'img/2.Enemy/3.FinalEnemy/2.floating/13.png'    
+        'img/2.Enemy/3.FinalEnemy/2.floating/13.png'
     ];
 
     constructor() {
@@ -62,5 +62,5 @@ class FinalEnemy extends MovableObject {
             }
         }, 1000 / 5); // 5 frames per second
     }
-    
+
 }
