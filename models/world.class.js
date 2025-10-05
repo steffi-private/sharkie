@@ -8,7 +8,7 @@ class World {
     statusbarEnergy = new StatusbarEnergy();
     statusbarCoin = new StatusbarCoin();
     statusbarPoisson = new StatusbarPoisson();
-    throwableObjects = [new ThrowableObject()];
+    throwableObjects = [];
     
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -31,8 +31,8 @@ class World {
         this.addObjectsToMap(this.level.pufferFishs);
         this.addObjectsToMap(this.level.finalEnemy);
         this.addObjectsToMap(this.level.coins);
-        if (this.level.collectibles) {
-            this.addObjectsToMap(this.level.collectibles);
+        if (this.level.bottles) {
+            this.addObjectsToMap(this.level.bottles);
         }
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character); 
