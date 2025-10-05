@@ -18,8 +18,8 @@ class CollectableObject extends MovableObject {
     isCollidingWithCharacter(character) {
         const cx = this.x + this.width / 2;
         const cy = this.y + this.height / 2;
-        const marginX = character.width * 0.30;
-        const marginY = character.height * 0.45;
+        const marginX = character.width * 0.35; // stricter horizontal
+        const marginY = character.height * 0.48; // stricter vertical (must be < 0.5)
         const left = character.x + marginX;
         const right = character.x + character.width - marginX;
         const top = character.y + marginY;

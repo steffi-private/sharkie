@@ -11,8 +11,6 @@ class PufferFish extends MovableObject {
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim5.png',
     ];
     
-
-
      constructor() {
         super().loadImage('../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim1.png');
         this.x = Math.random() * 800; // Random x position within canvas width
@@ -20,7 +18,7 @@ class PufferFish extends MovableObject {
         this.loadImages(this.IMAGES_SWIM);
         this.animate();
     }
-    
+
 
     animate(){
         let speed = this.speed;
