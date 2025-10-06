@@ -99,7 +99,11 @@ class World {
         if (this.keyboard.D && currentTime - this.lastThrowTime > throwCooldown) {
             // Check if we have poison bottles to throw
             if (this.statusbarPoisson.numberOfPoissons > 0) {
-                let bottle = new ThrowableObject(this.character.x + 90, this.character.y + 70);
+                // spawn bottle to the right or left depending on character direction
+                const facingLeft = !!this.character.otherDirection;
+                const spawnX = this.character.x + (facingLeft ? -20 : 90);
+                const spawnY = this.character.y + 70;
+                let bottle = new ThrowableObject(spawnX, spawnY, { otherDirection: facingLeft });
                 bottle.world = this; // Set world reference for onThrow function
                 bottle.onThrow(); // Reduce poison status bar when throwing
                 this.throwableObjects.push(bottle);
@@ -112,21 +116,17 @@ class World {
     checkCollisionJellyFishBottle() {
         if (!this.throwableObjects || !this.level || !this.level.jellyFishs) return;
 
-        // Rückwärts iterieren, damit Entfernen sicher ist
+        // iterate backwards to safely remove items while iterating
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
-
             for (let j = this.level.jellyFishs.length - 1; j >= 0; j--) {
-                const jelly = this.level.jellyFishs[j];
-
-                if (this.isBottleWithinEnemyInnerBox(bottle, jelly)) {
-                    // Entferne die Flasche sofort aus dem Spiel
+                const jellyFish = this.level.jellyFishs[j];
+                if (this.isBottleOnJellyFish(bottle, jellyFish)) {
+                    // remove the bottle
                     this.throwableObjects.splice(i, 1);
-
-                    // spiele Todes-Animation einmal und entferne das JellyFish danach
-                    this.playDeathAnimationThenRemove(jelly, this.level.jellyFishs, j, jelly.IMAGES_DEAD);
-
-                    // Ein Treffer pro Flasche -> weiter zur nächsten Flasche
+                    // play death animation and remove jellyfish afterwards
+                    this.playDeathAnimationThenRemove(jellyFish, this.level.jellyFishs, j, jellyFish.IMAGES_DEAD);
+                    // one bottle hits only one jellyfish
                     break;
                 }
             }
@@ -169,21 +169,21 @@ class World {
     }
 
 
-    isBottleWithinEnemyInnerBox(bottle, enemy) {
-        if (!bottle || !enemy) return false;
+    // simple axis-aligned bounding box collision between bottle and jellyfish
+    isBottleOnJellyFish(bottle, jellyFish) {
+        if (!bottle || !jellyFish) return false;
 
-        const bx = bottle.x + (bottle.width || 0) / 2;
-        const by = bottle.y + (bottle.height || 0) / 2;
+        const bx = Number(bottle.x || 0);
+        const by = Number(bottle.y || 0);
+        const bw = Number(bottle.width || 0);
+        const bh = Number(bottle.height || 0);
 
-        const marginX = enemy.width * 0.15;
-        const marginY = enemy.height * 0.25; // (must be < 50%) 
+        const jx = Number(jellyFish.x || 0);
+        const jy = Number(jellyFish.y || 0);
+        const jw = Number(jellyFish.width || 0);
+        const jh = Number(jellyFish.height || 0);
 
-        const left = enemy.x + marginX;
-        const right = enemy.x + enemy.width - marginX;
-        const top = enemy.y + marginY;
-        const bottom = enemy.y + enemy.height - marginY;
-
-        return bx >= left && bx <= right && by >= top && by <= bottom;
+        return bx < jx + jw && bx + bw > jx && by < jy + jh && by + bh > jy;
     }
 
 
