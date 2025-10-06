@@ -2,6 +2,29 @@
         font-family: 'LuckiestGuy';
         src: url('./img/5.Font/Luckiest_Guy/LuckiestGuy-Regular.ttf') format('truetype');
 }
+/* Load Luckiest Guy font (two family aliases for compatibility) */
+@font-face {
+    font-family: 'LuckiestGuy';
+    src: url('./img/5.Font/Luckiest_Guy/LuckiestGuy-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    /* alias with space used by some scripts */
+    font-family: 'Luckiest Guy';
+    src: url('./img/5.Font/Luckiest_Guy/LuckiestGuy-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* CSS variables for the final-life UI */
+:root {
+    --final-heart-size: 64px;
+    --final-heart-padding: 0px;
+    --final-font-family: 'Luckiest Guy', 'LuckiestGuy', Arial, Helvetica, sans-serif;
+}
 
 body {
     display: flex;
@@ -11,8 +34,8 @@ body {
     margin: 0;
     background-image: url('img/3.Background/Layers/5. Water/D1.png');
     background-position: center;
-    font-family: 'LuckiestGuy', Arial, Helvetica, sans-serif;
-}   
+    font-family: var(--final-font-family);
+}
 
 h1 {
     font-size: 64px; 
@@ -24,6 +47,26 @@ h1 {
 canvas {
     background-color: black;
     display: block;
+}
+
+/* helper class in case an HTML fallback UI is used for the final life */
+.final-life-ui {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  display: flex;
+  align-items: center;
+  gap: var(--final-heart-padding);
+  pointer-events: none;
+}
+.final-life-ui img {
+  width: var(--final-heart-size);
+  height: var(--final-heart-size);
+}
+.final-life-ui .final-life-text {
+  font-family: var(--final-font-family);
+  color: #fff;
+  font-size: calc(var(--final-heart-size) * 0.75);
 }
 
 /* Smartphones */

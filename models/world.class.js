@@ -8,6 +8,7 @@ class World {
     statusbarEnergy = new StatusbarEnergy();
     statusbarCoin = new StatusbarCoin();
     statusbarPoisson = new StatusbarPoisson();
+    statusbarFinal = new StatusbarFinal();
     throwableObjects = [];
     lastThrowTime = 0; // Cooldown for throwing bottles
 
@@ -56,6 +57,8 @@ class World {
         this.addToMap(this.statusbarEnergy);
         this.addToMap(this.statusbarCoin);
         this.addToMap(this.statusbarPoisson);
+    // draw final enemy life bar (if visible)
+    this.statusbarFinal.draw(this.ctx);
 
         //draw() is called repeatedly
         let self = this;
@@ -75,6 +78,7 @@ class World {
             this.checkCollisionsWithPufferFishs();
             this.checkThrowObjects();
             this.checkCollisionJellyFishBottle();
+            this.checkCollisionFinalEnemyBottle();
         }, 200);
     }
 
@@ -143,6 +147,28 @@ class World {
                     // one bottle hits only one jellyfish
                     break;
                 }
+            }
+        }
+    }
+
+    checkCollisionFinalEnemyBottle() {
+        if (!this.throwableObjects || !this.level || !this.level.finalEnemy) return;
+        // assume single finalEnemy at index 0 for simplicity
+        const enemy = this.level.finalEnemy[0];
+        if (!enemy) return;
+
+        for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+            const bottle = this.throwableObjects[i];
+            if (!bottle.thrown) continue;
+            if (this.isBottleOnJellyFish(bottle, enemy)) {
+                // remove bottle
+                this.throwableObjects.splice(i, 1);
+                // deal damage
+                enemy.takeDamage(20);
+                // show final bar when first hit
+                if (!this.statusbarFinal.visible) this.statusbarFinal.show();
+                this.statusbarFinal.setPercentage(enemy.life);
+                break;
             }
         }
     }
