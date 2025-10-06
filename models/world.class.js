@@ -144,15 +144,23 @@ class World {
         const enemy = this.level.finalEnemy[0];
         if (!enemy) return;
 
+        // iterate backwards to safely remove bottles while iterating
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
             if (!bottle.thrown) continue;
-            if (this.isBottleOnJellyFish(bottle, enemy)) {
-                // remove bottle
+
+            // Strengere Kollisionsprüfung: das Flaschen-Zentrum muss innerhalb
+            // eines reduzierten inneren Rechtecks des Final-Enemies liegen.
+            if (this.isBottleOnFinalEnemyStrict(bottle, enemy)) {
+                // entferne die Flasche
                 this.throwableObjects.splice(i, 1);
-                // deal damage
-                enemy.takeDamage(20);
-                // show final bar when first hit
+                // wende Schaden an (wenn takeDamage vorhanden ist, benutze es)
+                if (typeof enemy.takeDamage === 'function') {
+                    enemy.takeDamage(20);
+                } else if (enemy.life !== undefined) {
+                    enemy.life = Math.max(0, enemy.life - 20);
+                }
+                // zeige Final-Enemy-Leiste an und aktualisiere sie
                 if (!this.statusbarFinal.visible) this.statusbarFinal.show();
                 this.statusbarFinal.setPercentage(enemy.life);
                 break;
@@ -214,6 +222,36 @@ class World {
         return bx < jx + jw && bx + bw > jx && by < jy + jh && by + bh > jy;
     }
 
+    // strict collision: bottle center must lie inside a reduced inner rectangle of the enemy
+    isBottleOnFinalEnemyStrict(bottle, enemy) {
+        if (!bottle || !enemy || !bottle.thrown) return false;
+
+        const bx = Number(bottle.x || 0);
+        const by = Number(bottle.y || 0);
+        const bw = Number(bottle.width || 0);
+        const bh = Number(bottle.height || 0);
+
+        // bottle center
+        const cx = bx + bw / 2;
+        const cy = by + bh / 2;
+
+        const ex = Number(enemy.x || 0);
+        const ey = Number(enemy.y || 0);
+        const ew = Number(enemy.width || 0);
+        const eh = Number(enemy.height || 0);
+
+        // inner margins (tunable)
+        const marginX = ew * 0.2; // 25% width
+        const marginY = eh * 0.30; // 30% height
+
+        const left = ex + marginX;
+        const right = ex + ew - marginX;
+        const top = ey + marginY;
+        const bottom = ey + eh - marginY;
+
+        return cx >= left && cx <= right && cy >= top && cy <= bottom;
+    }
+
 
     addObjectsToMap(objects) {
         objects.forEach(object => {
@@ -253,8 +291,8 @@ class World {
     isEnemyWithinCharacterInnerHitbox(enemy) {
         const ex = enemy.x + enemy.width / 2;
         const ey = enemy.y + enemy.height / 2;
-        const marginX = this.character.width * 0.20; 
-        const marginY = this.character.height * 0.35; // (must be < 50%)
+        const marginX = this.character.width * 0.1; 
+        const marginY = this.character.height * 0.2; // (must be < 50%)
         const left = this.character.x + marginX;
         const right = this.character.x + this.character.width - marginX;
         const top = this.character.y + marginY;
