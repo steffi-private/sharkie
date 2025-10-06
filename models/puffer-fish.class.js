@@ -10,12 +10,15 @@ class PufferFish extends MovableObject {
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim4.png',
         '../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim5.png',
     ];
-    
+
     
      constructor() {
         super().loadImage('../img/2.Enemy/1.PufferFish_3ColorOptions/1.Swim/1.swim1.png');
-        this.x = Math.random() * 800; // Random x position within canvas width
-        this.y = Math.random() * 600; // Random y position within canvas height
+    this.x = Math.random() * 800; // Random x position within canvas width
+    // Keep puffer fish within visible canvas height (avoid spawning below canvas)
+    const minY = 50;
+    const maxY = 420; // allow puffer fish to spawn lower (up to y=420)
+    this.y = minY + Math.random() * (maxY - minY);
         this.loadImages(this.IMAGES_SWIM);
         this.animate();
     }

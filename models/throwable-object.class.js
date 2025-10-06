@@ -10,8 +10,9 @@ class ThrowableObject extends CollectableObject {
         this.x = x || 0; // Start position X
         this.y = y || 0; // Start position Y
 
-        const { collectible = false, thrown = true, otherDirection = false } = options;
-        this.otherDirection = otherDirection;
+    const { collectible = false, thrown = true, otherDirection = false } = options;
+    this.otherDirection = otherDirection;
+    this.thrown = thrown;
         if (collectible) {
             this.enableAutoCollect();
         }
@@ -21,7 +22,8 @@ class ThrowableObject extends CollectableObject {
     }
 
     throw() {
-        this.speedY = 30; // Initial vertical speed
+    this.thrown = true;
+    this.speedY = 30; // Initial vertical speed
         this.applyGravity();
         const speedX = 10;
         const dir = this.otherDirection ? -1 : 1;

@@ -17,6 +17,20 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+
+        // Add 7 additional bottles as collectibles on the canvas
+        try {
+            for (let i = 0; i < 7; i++) {
+                const bx = this.character.x + 100 + i * 60;
+                const by = this.character.y + 70;
+                const bottle = new ThrowableObject(bx, by, { collectible: true, thrown: false });
+                bottle.world = this;
+                this.throwableObjects.push(bottle);
+            }
+        } catch (e) {
+            console.warn('Could not create initial bottles:', e);
+        }
+
         this.run();
     }
 
@@ -171,7 +185,8 @@ class World {
 
     // simple axis-aligned bounding box collision between bottle and jellyfish
     isBottleOnJellyFish(bottle, jellyFish) {
-        if (!bottle || !jellyFish) return false;
+        // only consider collisions for bottles that have been thrown
+        if (!bottle || !jellyFish || !bottle.thrown) return false;
 
         const bx = Number(bottle.x || 0);
         const by = Number(bottle.y || 0);
