@@ -19,19 +19,6 @@ class World {
         this.draw();
         this.setWorld();
 
-        // Add 7 additional bottles as collectibles on the canvas
-        try {
-            for (let i = 0; i < 7; i++) {
-                const bx = this.character.x + 100 + i * 60;
-                const by = this.character.y + 70;
-                const bottle = new ThrowableObject(bx, by, { collectible: true, thrown: false });
-                bottle.world = this;
-                this.throwableObjects.push(bottle);
-            }
-        } catch (e) {
-            console.warn('Could not create initial bottles:', e);
-        }
-
         this.run();
     }
 

@@ -46,6 +46,11 @@ const level1 = new Level(
     [
         new ThrowableObject(550, 320, { collectible: true, thrown: false }),
         new ThrowableObject(900, 280, { collectible: true, thrown: false }),
+        new ThrowableObject(1300, 300, { collectible: true, thrown: false }),
+        new ThrowableObject(1400, 320, { collectible: true, thrown: false }),  
+        new ThrowableObject(1600, 290, { collectible: true, thrown: false }),
+        new ThrowableObject(1800, 310, { collectible: true, thrown: false }),
+        new ThrowableObject(2000, 300, { collectible: true, thrown: false }),
         new ThrowableObject(1300, 300, { collectible: true, thrown: false })
     ]
 );
