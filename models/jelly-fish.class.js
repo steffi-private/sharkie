@@ -8,6 +8,12 @@ class JellyFish extends MovableObject {
         '../img/2.Enemy/2.JellyFish/Regular-damage/Lila 3.png',
         '../img/2.Enemy/2.JellyFish/Regular-damage/Lila 4.png',   
     ];
+    IMAGES_DEAD = [
+        '../img/2.Enemy/2.JellyFish/Dead/Lila/L1.png',
+        '../img/2.Enemy/2.JellyFish/Dead/Lila/L2.png',
+        '../img/2.Enemy/2.JellyFish/Dead/Lila/L3.png',
+        '../img/2.Enemy/2.JellyFish/Dead/Lila/L4.png'
+    ];
     
 
 
@@ -16,6 +22,7 @@ class JellyFish extends MovableObject {
         this.x = Math.random() * 800; // Random x position within canvas width
         this.y = Math.random() * 600; // Random y position within canvas height
         this.loadImages(this.IMAGES_REGULAR_DAMAGE);
+        this.loadImages(this.IMAGES_DEAD);
         this.animate();
     }
  

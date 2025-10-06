@@ -60,6 +60,7 @@ class World {
             this.checkCollisionsWithJellyFishs();
             this.checkCollisionsWithPufferFishs();
             this.checkThrowObjects();
+            this.checkCollisionJellyFishBottle();
         }, 200);
     }
 
@@ -105,6 +106,84 @@ class World {
                 this.lastThrowTime = currentTime; // Update last throw time
             }
         }
+    }
+
+
+    checkCollisionJellyFishBottle() {
+        if (!this.throwableObjects || !this.level || !this.level.jellyFishs) return;
+
+        // Rückwärts iterieren, damit Entfernen sicher ist
+        for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+            const bottle = this.throwableObjects[i];
+
+            for (let j = this.level.jellyFishs.length - 1; j >= 0; j--) {
+                const jelly = this.level.jellyFishs[j];
+
+                if (this.isBottleWithinEnemyInnerBox(bottle, jelly)) {
+                    // Entferne die Flasche sofort aus dem Spiel
+                    this.throwableObjects.splice(i, 1);
+
+                    // spiele Todes-Animation einmal und entferne das JellyFish danach
+                    this.playDeathAnimationThenRemove(jelly, this.level.jellyFishs, j, jelly.IMAGES_DEAD);
+
+                    // Ein Treffer pro Flasche -> weiter zur nächsten Flasche
+                    break;
+                }
+            }
+        }
+    }
+
+
+    playDeathAnimationThenRemove(enemy, arrayRef, idx, imagesArray) {
+        if (!enemy || !arrayRef || !imagesArray || imagesArray.length === 0) {
+            // Fallback: sofort entfernen
+            arrayRef.splice(idx, 1);
+            return;
+        }
+
+        let k = 0;
+        const fps = 5;
+        const interval = setInterval(() => {
+            const path = imagesArray[k];
+            if (enemy.imageCache && enemy.imageCache[path]) {
+                enemy.img = enemy.imageCache[path];
+            } else {
+                // falls imageCache noch nicht vorhanden ist, lade Bild provisorisch
+                const img = new Image();
+                img.src = path;
+                enemy.img = img;
+            }
+            k++;
+            if (k >= imagesArray.length) {
+                clearInterval(interval);
+                // Entfernen aus Level-Array
+                const removeIndex = arrayRef.indexOf(enemy);
+                if (removeIndex !== -1) {
+                    arrayRef.splice(removeIndex, 1);
+                } else if (typeof idx === 'number') {
+                    // Fallback anhand des übergebenen idx
+                    arrayRef.splice(idx, 1);
+                }
+            }
+        }, 1000 / fps);
+    }
+
+
+    isBottleWithinEnemyInnerBox(bottle, enemy) {
+        if (!bottle || !enemy) return false;
+
+        const bx = bottle.x + (bottle.width || 0) / 2;
+        const by = bottle.y + (bottle.height || 0) / 2;
+
+        const marginX = enemy.width * 0.15;
+        const marginY = enemy.height * 0.25; // (must be < 50%) 
+
+        const left = enemy.x + marginX;
+        const right = enemy.x + enemy.width - marginX;
+        const top = enemy.y + marginY;
+        const bottom = enemy.y + enemy.height - marginY;
+
+        return bx >= left && bx <= right && by >= top && by <= bottom;
     }
 
 
