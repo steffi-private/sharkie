@@ -72,6 +72,16 @@ class Character extends MovableObject {
         '../img/1.Sharkie/6.dead/2.Electro_shock/9.png',
         '../img/1.Sharkie/6.dead/2.Electro_shock/10.png'
     ];
+    IMAGES_SLAP = [
+        '../img/1.Sharkie/4.Attack/Fin slap/1.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/2.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/3.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/4.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/5.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/6.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/7.png',
+        '../img/1.Sharkie/4.Attack/Fin slap/8.png'
+    ];
     
     
     world;
@@ -104,6 +114,11 @@ class Character extends MovableObject {
                 if (this.world.keyboard.UP && this.speedY < 1 && this.y > 50) { // Allow jumping only if speedY is less than 1 & y is above a certain threshold
                     this.jump();
                 }
+                // start slap attack when SPACE pressed
+                if (this.world.keyboard.SPACE && !this.slapping) {
+                    this.slapping = true;
+                    this.playSlapOnce();
+                }
             }
 
             // always update camera even if character is dead
@@ -120,6 +135,21 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_IDLE);
             }            
         }, 1000 / 5); // 5 frames per second
+    }
+
+    playSlapOnce() {
+        const imgs = this.IMAGES_SLAP || [];
+        if (!imgs.length) { this.slapping = false; return; }
+        let k = 0; const fps = 8;
+        const prevFrozen = this.animationFrozen;
+        this.animationFrozen = true; // prevent regular loops from overwriting
+        const interval = setInterval(() => {
+            const path = imgs[k];
+            if (this.imageCache && this.imageCache[path]) this.img = this.imageCache[path];
+            else { const i = new Image(); i.src = path; this.img = i; }
+            k++;
+            if (k >= imgs.length) { clearInterval(interval); this.slapping = false; this.animationFrozen = prevFrozen; }
+        }, 1000 / fps);
     }
     
     
