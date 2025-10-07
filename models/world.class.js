@@ -44,8 +44,8 @@ class World {
         this.addToMap(this.statusbarEnergy);
         this.addToMap(this.statusbarCoin);
         this.addToMap(this.statusbarPoisson);
-    // draw final enemy life bar (if visible)
-    this.statusbarFinal.draw(this.ctx);
+        // draw final enemy life bar (if visible)
+        this.statusbarFinal.draw(this.ctx);
 
         //draw() is called repeatedly
         let self = this;
@@ -70,68 +70,121 @@ class World {
     }
 
     checkCollisionsWithJellyFishs() {
-        this.level.jellyFishs.forEach(jellyFish => {
-            if (this.isEnemyWithinCharacterInnerHitbox(jellyFish)) {
-                this.character.isHit(1);
-                this.statusbarEnergy.setPercentage(this.character.energy);
-                if (this.character.isDead()) {
-                    this.character.playAnimation(this.character.IMAGES_DEAD_POISONED);
-                } else {
-                    this.character.playAnimation(this.character.IMAGES_HURT_POISONED);
-                }
+        this.level.jellyFishs.forEach(jellyFish => this.processJellyFishCollision(jellyFish));
+    }
+
+    processJellyFishCollision(jellyFish) {
+        if (!this.isEnemyWithinCharacterInnerHitbox(jellyFish)) return;
+        this.character.isHit(1);
+        this.statusbarEnergy.setPercentage(this.character.energy);
+        if (this.character.isDead()) this.startPoisonDeathSequence();
+        else this.character.playAnimation(this.character.IMAGES_HURT_POISONED);
+    }
+
+    startPoisonDeathSequence() {
+        if (this.character.deathSequenceStarted) return;
+        this.character.deathSequenceStarted = true;
+        this.character.animationFrozen = true; // stop normal loops
+        this.playPoisonDeathFrames();
+    }
+
+    playPoisonDeathFrames() {
+        const imgs = this.character.IMAGES_DEAD_POISONED;
+        let k = 0; const fps = 5; let interval;
+        const tick = () => {
+            this.setCharacterImgByPath(imgs[k]);
+            k++;
+            if (k >= imgs.length) {
+                clearInterval(interval);
+                this.finalizePoisonDeathFrame(imgs[imgs.length - 1]);
             }
-        });
+        };
+        interval = setInterval(tick, 1000 / fps);
+    }
+
+    setCharacterImgByPath(path) {
+        if (!path) return;
+        if (this.character.imageCache && this.character.imageCache[path]) {
+            this.character.img = this.character.imageCache[path];
+            return;
+        }
+        const i = new Image(); i.src = path; this.character.img = i;
+    }
+
+    finalizePoisonDeathFrame(lastPath) {
+        this.setCharacterImgByPath(lastPath);
+        this.character.animationFrozen = true;
+        this.startCharacterFall();
+    }
+
+    startCharacterFall() {
+        const targetY = this.ctx.canvas.height + 200;
+        const fallSpeed = 6;
+        const fallInterval = setInterval(() => {
+            if (this.character.y < targetY) this.character.y += fallSpeed;
+            else { this.character.y = targetY; clearInterval(fallInterval); }
+        }, 1000 / 60);
     }
 
     checkCollisionsWithPufferFishs() {
-        this.level.pufferFishs.forEach(pufferFish => {
-            if (this.isEnemyWithinCharacterInnerHitbox(pufferFish)) {
-                this.character.isHit(2);
-                this.statusbarEnergy.setPercentage(this.character.energy);
-                if (this.character.isDead()) {
-                    this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
-                } else {
-                    this.character.playAnimation(this.character.IMAGES_HURT_ELECTRO);
-                }
-            }
-        });
+        this.level.pufferFishs.forEach(p => this.processPufferFishCollision(p));
+    }
+
+    processPufferFishCollision(pufferFish) {
+        if (!this.isEnemyWithinCharacterInnerHitbox(pufferFish)) return;
+        this.character.isHit(2);
+        this.statusbarEnergy.setPercentage(this.character.energy);
+        if (this.character.isDead()) this.startElectroDeathSequence();
+        else this.character.playAnimation(this.character.IMAGES_HURT_ELECTRO);
+    }
+
+    startElectroDeathSequence() {
+        if (this.character.electroDeathStarted) return;
+        this.character.electroDeathStarted = true;
+        this.character.playAnimation(this.character.IMAGES_DEAD_ELECTRO);
+        const imgs = this.character.IMAGES_DEAD_ELECTRO || [];
+        if (imgs.length) this.setCharacterImgByPath(imgs[imgs.length - 1]);
+        this.character.animationFrozen = true;
     }
 
     checkThrowObjects() {
-        const currentTime = Date.now();
-        const throwCooldown = 500; // 500ms cooldown between throws
-        
-        if (this.keyboard.D && currentTime - this.lastThrowTime > throwCooldown) {
-            // Check if we have poison bottles to throw
-            if (this.statusbarPoisson.numberOfPoissons > 0) {
-                // spawn bottle to the right or left depending on character direction
-                const facingLeft = !!this.character.otherDirection;
-                const spawnX = this.character.x + (facingLeft ? -20 : 90);
-                const spawnY = this.character.y + 70;
-                let bottle = new ThrowableObject(spawnX, spawnY, { otherDirection: facingLeft });
-                bottle.world = this; // Set world reference for onThrow function
-                bottle.onThrow(); // Reduce poison status bar when throwing
-                this.throwableObjects.push(bottle);
-                this.lastThrowTime = currentTime; // Update last throw time
-            }
-        }
+        const now = Date.now();
+        if (!this.canStartThrow(now)) return;
+        this.spawnAndConsumeBottle(now);
     }
 
+    canStartThrow(now) {
+        const throwCooldown = 500;
+        if (!this.keyboard.D) return false;
+        if (now - this.lastThrowTime <= throwCooldown) return false;
+        return this.statusbarPoisson && this.statusbarPoisson.numberOfPoissons > 0;
+    }
+
+    spawnAndConsumeBottle(now) {
+        const facingLeft = !!this.character.otherDirection;
+        const spawnX = this.character.x + (facingLeft ? -20 : 90);
+        const spawnY = this.character.y + 70;
+        const bottle = this.createThrowable(spawnX, spawnY, facingLeft);
+        bottle.onThrow(); // reduce poison count
+        this.throwableObjects.push(bottle);
+        this.lastThrowTime = now;
+    }
+
+    createThrowable(spawnX, spawnY, facingLeft) {
+        const bottle = new ThrowableObject(spawnX, spawnY, { otherDirection: facingLeft });
+        bottle.world = this;
+        return bottle;
+    }
 
     checkCollisionJellyFishBottle() {
         if (!this.throwableObjects || !this.level || !this.level.jellyFishs) return;
-
-        // iterate backwards to safely remove items while iterating
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
             for (let j = this.level.jellyFishs.length - 1; j >= 0; j--) {
                 const jellyFish = this.level.jellyFishs[j];
                 if (this.isBottleOnJellyFish(bottle, jellyFish)) {
-                    // remove the bottle
                     this.throwableObjects.splice(i, 1);
-                    // play death animation and remove jellyfish afterwards
                     this.playDeathAnimationThenRemove(jellyFish, this.level.jellyFishs, j, jellyFish.IMAGES_DEAD);
-                    // one bottle hits only one jellyfish
                     break;
                 }
             }
@@ -140,125 +193,127 @@ class World {
 
     checkCollisionFinalEnemyBottle() {
         if (!this.throwableObjects || !this.level || !this.level.finalEnemy) return;
-        // assume single finalEnemy at index 0 for simplicity
         const enemy = this.level.finalEnemy[0];
         if (!enemy) return;
-
-        // iterate backwards to safely remove bottles while iterating
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
             if (!bottle.thrown) continue;
-
-            // Strengere Kollisionsprüfung: das Flaschen-Zentrum muss innerhalb
-            // eines reduzierten inneren Rechtecks des Final-Enemies liegen.
-            if (this.isBottleOnFinalEnemyStrict(bottle, enemy)) {
-                // entferne die Flasche
-                this.throwableObjects.splice(i, 1);
-                // wende Schaden an (wenn takeDamage vorhanden ist, benutze es)
-                if (typeof enemy.takeDamage === 'function') {
-                    enemy.takeDamage(20);
-                } else if (enemy.life !== undefined) {
-                    enemy.life = Math.max(0, enemy.life - 20);
+                if (this.isBottleOnFinalEnemyStrict(bottle, enemy)) {
+                    this.applyBottleHitToEnemy(i, enemy);
+                    break;
                 }
-                // zeige Final-Enemy-Leiste an und aktualisiere sie
-                if (!this.statusbarFinal.visible) this.statusbarFinal.show();
-                this.statusbarFinal.setPercentage(enemy.life);
-                break;
-            }
         }
     }
 
+    handleBottleFinalEnemyCollision(bottle, enemy, bottleIndex) {
+        if (!this.isBottleOnFinalEnemyStrict(bottle, enemy)) return false;
+        this.applyBottleHitToEnemy(bottleIndex, enemy);
+        return true;
+    }
+
+    applyBottleHitToEnemy(bottleIndex, enemy) {
+        this.throwableObjects.splice(bottleIndex, 1);
+        if (typeof enemy.takeDamage === 'function') enemy.takeDamage(20);
+        else if (enemy.life !== undefined) enemy.life = Math.max(0, enemy.life - 20);
+        if (!this.statusbarFinal.visible) this.statusbarFinal.show();
+        this.statusbarFinal.setPercentage(enemy.life);
+    }
 
     playDeathAnimationThenRemove(enemy, arrayRef, idx, imagesArray) {
-        if (!enemy || !arrayRef || !imagesArray || imagesArray.length === 0) {
-            // Fallback: sofort entfernen
-            arrayRef.splice(idx, 1);
+        if (!this.validateDeathAnimationInputs(enemy, arrayRef, imagesArray)) {
+            if (arrayRef && typeof idx === 'number') arrayRef.splice(idx, 1);
             return;
         }
+        this.playFramesThenRemove(enemy, arrayRef, idx, imagesArray);
+    }
 
-        let k = 0;
-        const fps = 5;
+    validateDeathAnimationInputs(enemy, arrayRef, imagesArray) {
+        return !!enemy && Array.isArray(arrayRef) && Array.isArray(imagesArray) && imagesArray.length > 0;
+    }
+
+    playFramesThenRemove(enemy, arrayRef, idx, imagesArray) {
+        let k = 0; const fps = 5;
         const interval = setInterval(() => {
             const path = imagesArray[k];
-            if (enemy.imageCache && enemy.imageCache[path]) {
-                enemy.img = enemy.imageCache[path];
-            } else {
-                // falls imageCache noch nicht vorhanden ist, lade Bild provisorisch
-                const img = new Image();
-                img.src = path;
-                enemy.img = img;
-            }
+            this.setEnemyImgByPath(enemy, path);
             k++;
-            if (k >= imagesArray.length) {
-                clearInterval(interval);
-                // Entfernen aus Level-Array
-                const removeIndex = arrayRef.indexOf(enemy);
-                if (removeIndex !== -1) {
-                    arrayRef.splice(removeIndex, 1);
-                } else if (typeof idx === 'number') {
-                    // Fallback anhand des übergebenen idx
-                    arrayRef.splice(idx, 1);
-                }
-            }
+            if (k >= imagesArray.length) { clearInterval(interval); this.removeEnemyFromArray(enemy, arrayRef, idx); }
         }, 1000 / fps);
     }
 
+    setEnemyImgByPath(enemy, path) {
+        if (enemy.imageCache && enemy.imageCache[path]) { enemy.img = enemy.imageCache[path]; return; }
+        const img = new Image(); img.src = path; enemy.img = img;
+    }
 
-    // simple axis-aligned bounding box collision between bottle and jellyfish
+    removeEnemyFromArray(enemy, arrayRef, idx) {
+        const removeIndex = arrayRef.indexOf(enemy);
+        if (removeIndex !== -1) arrayRef.splice(removeIndex, 1);
+        else if (typeof idx === 'number') arrayRef.splice(idx, 1);
+    }
+
     isBottleOnJellyFish(bottle, jellyFish) {
-        // only consider collisions for bottles that have been thrown
         if (!bottle || !jellyFish || !bottle.thrown) return false;
-
         const bx = Number(bottle.x || 0);
         const by = Number(bottle.y || 0);
         const bw = Number(bottle.width || 0);
         const bh = Number(bottle.height || 0);
-
         const jx = Number(jellyFish.x || 0);
         const jy = Number(jellyFish.y || 0);
         const jw = Number(jellyFish.width || 0);
         const jh = Number(jellyFish.height || 0);
-
         return bx < jx + jw && bx + bw > jx && by < jy + jh && by + bh > jy;
     }
 
-    // strict collision: bottle center must lie inside a reduced inner rectangle of the enemy
+
     isBottleOnFinalEnemyStrict(bottle, enemy) {
         if (!bottle || !enemy || !bottle.thrown) return false;
-
         const bx = Number(bottle.x || 0);
         const by = Number(bottle.y || 0);
         const bw = Number(bottle.width || 0);
-        const bh = Number(bottle.height || 0);
-
-        // bottle center
+        const bh = Number(bottle.height || 0); 
         const cx = bx + bw / 2;
         const cy = by + bh / 2;
-
         const ex = Number(enemy.x || 0);
         const ey = Number(enemy.y || 0);
         const ew = Number(enemy.width || 0);
-        const eh = Number(enemy.height || 0);
-
-        // inner margins (tunable)
+        const eh = Number(enemy.height || 0); 
         const marginX = ew * 0.2; // 25% width
         const marginY = eh * 0.30; // 30% height
-
         const left = ex + marginX;
         const right = ex + ew - marginX;
         const top = ey + marginY;
         const bottom = ey + eh - marginY;
-
         return cx >= left && cx <= right && cy >= top && cy <= bottom;
     }
 
+    getBottleCenter(bottle) {
+        const bx = Number(bottle.x || 0);
+        const by = Number(bottle.y || 0);
+        const bw = Number(bottle.width || 0);
+        const bh = Number(bottle.height || 0);
+        return { x: bx + bw / 2, y: by + bh / 2 };
+    }
+
+    getEnemyInnerRect(enemy) {
+        const ex = Number(enemy.x || 0);
+        const ey = Number(enemy.y || 0);
+        const ew = Number(enemy.width || 0);
+        const eh = Number(enemy.height || 0);
+        const marginX = ew * 0.2;
+        const marginY = eh * 0.30;
+        return { left: ex + marginX, right: ex + ew - marginX, top: ey + marginY, bottom: ey + eh - marginY };
+    }
+    
+    isPointInRect(x, y, rect) {
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    }
 
     addObjectsToMap(objects) {
         objects.forEach(object => {
             this.addToMap(object);
         });
     }
-
 
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
@@ -280,18 +335,15 @@ class World {
         movableObject.x = movableObject.x * -1;
     }
 
-
     flipImageBack(movableObject) {
         movableObject.x = movableObject.x * -1;
         this.ctx.restore();
     }
 
-    // Use a strict collision check similar to collectable objects:
-    // enemy center must lie inside a reduced inner rectangle of the character.
-    isEnemyWithinCharacterInnerHitbox(enemy) {
+   isEnemyWithinCharacterInnerHitbox(enemy) {
         const ex = enemy.x + enemy.width / 2;
         const ey = enemy.y + enemy.height / 2;
-        const marginX = this.character.width * 0.1; 
+        const marginX = this.character.width * 0.1;
         const marginY = this.character.height * 0.2; // (must be < 50%)
         const left = this.character.x + marginX;
         const right = this.character.x + this.character.width - marginX;

@@ -4,6 +4,8 @@ class Character extends MovableObject {
     width = 150;
     height = 200;
     speed =  10;// Default speed
+    // when true, the regular animation loop will be paused (used for permanent death frame)
+    animationFrozen = false;
     
     IMAGES_IDLE = [
         '../img/1.Sharkie/1.IDLE/1.png',
@@ -69,7 +71,8 @@ class Character extends MovableObject {
         '../img/1.Sharkie/6.dead/2.Electro_shock/8.png',
         '../img/1.Sharkie/6.dead/2.Electro_shock/9.png',
         '../img/1.Sharkie/6.dead/2.Electro_shock/10.png'
-    ]
+    ];
+    
     
     world;
     
@@ -89,38 +92,28 @@ class Character extends MovableObject {
     animate() {
 
         setInterval(() => {
-
-            /* Momentan in world.class checkCollisions() gelöst: 
-            
-                    if (this.isDead()) {
-                        this.playAnimation(this.IMAGES_DEAD_POISONED);
-                    } else {
-                        this.playAnimation(this.IMAGES_HURT_POISONED);
-                    }
-                    }         ebenso für puffer fish & ELEKTRO
-                    
-                    if (this.isHurt()) {
-                        this.playAnimation(this.IMAGES_HURT_ELECTRO);
-                    }
-            */
-            
-
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) { 
-                this.moveRight();
-                 this.otherDirection = false; // Facing right
-            } else if (this.world.keyboard.LEFT && this.x > 100) {
-                this.moveLeft();
-                 this.otherDirection = true; // Facing left
-            }
-            if (this.world.keyboard.UP && this.speedY < 1 && this.y > 50) { // Allow jumping only if speedY is less than 1 & y is above a certain threshold
-                this.jump();
+            // stop responding to input when dead
+            if (!this.isDead()) {
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) { 
+                    this.moveRight();
+                    this.otherDirection = false; // Facing right
+                } else if (this.world.keyboard.LEFT && this.x > 100) {
+                    this.moveLeft();
+                    this.otherDirection = true; // Facing left
+                }
+                if (this.world.keyboard.UP && this.speedY < 1 && this.y > 50) { // Allow jumping only if speedY is less than 1 & y is above a certain threshold
+                    this.jump();
+                }
             }
 
-
+            // always update camera even if character is dead
             this.world.camera_x = -this.x + 100; // Adjust camera position based on character's x position
             }, 1000 / 20); // 20 frames per second
             
         setInterval(() => {
+            // don't play regular animations when frozen (e.g. after death final frame set)
+            if (this.animationFrozen) return;
+
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_SWIM);
             } else {
