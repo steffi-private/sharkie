@@ -63,10 +63,63 @@ class World {
         setInterval(() => {
             this.checkCollisionsWithJellyFishs();
             this.checkCollisionsWithPufferFishs();
+            this.checkPufferFishHitBySlap();
             this.checkThrowObjects();
             this.checkCollisionJellyFishBottle();
             this.checkCollisionFinalEnemyBottle();
         }, 200);
+    }
+
+    // check if any puffer fish was hit by the character's slap (one-shot)
+    checkPufferFishHitBySlap() {
+        if (!this.character || !this.character.slapping) return false;
+        for (let i = this.level.pufferFishs.length - 1; i >= 0; i--) {
+            const fish = this.level.pufferFishs[i];
+            if (this.processPufferFishSlapCollision(fish)) return true;
+        }
+        return false;
+    }
+
+    processPufferFishSlapCollision(fish) {
+        if (!fish || fish.deadStarted) return false;
+        const slapRect = this.getSlapRect();
+        const fishRect = { left: fish.x, right: fish.x + fish.width, top: fish.y, bottom: fish.y + fish.height };
+        if (!this.rectsOverlap(slapRect, fishRect)) return false;
+        this.startPufferFishDeathAnimation(fish);
+        return true;
+    }
+
+    getSlapRect() {
+        const c = this.character;
+        const w = 120, h = 90;
+        const x = c.otherDirection ? c.x - w : c.x + c.width;
+        const y = c.y + 50;
+        return { left: x, right: x + w, top: y, bottom: y + h };
+    }
+
+    rectsOverlap(a, b) {
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    }
+
+    startPufferFishDeathAnimation(fish) {
+        if (!fish) return;
+        fish.deadStarted = true;
+        // set dead image
+        const path = (fish.IMAGES_DEAD && fish.IMAGES_DEAD[0]) || fish.img;
+        if (fish.imageCache && fish.imageCache[path]) fish.img = fish.imageCache[path];
+        else { const i = new Image(); i.src = path; fish.img = i; }
+        // animate diagonal up away from character
+        const away = fish.x < this.character.x ? -4 : 4;
+        const up = -5;
+        const interval = setInterval(() => {
+            fish.x += away; fish.y += up;
+            if (fish.y < -200) { clearInterval(interval); this.removePufferFish(fish); }
+        }, 1000 / 60);
+    }
+
+    removePufferFish(fish) {
+        const idx = this.level.pufferFishs.indexOf(fish);
+        if (idx !== -1) this.level.pufferFishs.splice(idx, 1);
     }
 
     checkCollisionsWithJellyFishs() {
