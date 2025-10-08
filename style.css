@@ -84,3 +84,60 @@ canvas {
         display: none;
     }
 }
+
+/* Game over overlay styles */
+/* full-screen dimming backdrop */
+#game-over-overlay {
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    background-color: rgba(4, 28, 88, 0.6); /* dim backdrop */
+    z-index: 9999;
+}
+
+/* centered panel box with rounded corners and white border */
+.game-over-box {
+    width: min(520px, 90%);
+    padding: 28px 20px;
+    background: rgba(4, 28, 88, 0.95);
+    border-radius: 14px;
+    border: 3px solid #fff; /* white border */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    pointer-events: auto; /* allow clicks inside the box */
+}
+
+#game-over-overlay .game-over-content {
+    font-family: var(--final-font-family);
+    color: #fff;
+    font-size: 72px;
+    text-align: center;
+    pointer-events: auto;
+    text-transform: lowercase;
+}
+
+#try-again-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+#try-again-button img {
+    width: 220px; /* reasonable default size, adjust if needed */
+    height: auto;
+    display: block;
+}
+
+.game-over-content + #try-again-button {
+    /* kept for compatibility but gap handles spacing */
+    margin-top: 0;
+}
+.hidden { display: none; }
+.visible { display: flex; pointer-events: auto; }

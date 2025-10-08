@@ -11,6 +11,7 @@ class World {
     statusbarFinal = new StatusbarFinal();
     throwableObjects = [];
     lastThrowTime = 0; // Cooldown for throwing bottles
+    gameOverVisible = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -18,6 +19,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        this.setupTryAgainButton();
 
         this.run();
     }
@@ -46,6 +48,7 @@ class World {
         this.addToMap(this.statusbarPoisson);
         // draw final enemy life bar (if visible)
         this.statusbarFinal.draw(this.ctx);
+        // overlay is handled via static HTML element; JS only toggles its visibility
 
         //draw() is called repeatedly
         let self = this;
@@ -67,7 +70,35 @@ class World {
             this.checkThrowObjects();
             this.checkCollisionJellyFishBottle();
             this.checkCollisionFinalEnemyBottle();
+            this.checkGameOver();
         }, 200);
+    }
+
+    checkGameOver() {
+        if (this.gameOverVisible) return;
+        if (this.character && typeof this.character.isDead === 'function' && this.character.isDead()) {
+            this.showGameOver();
+        }
+    }
+
+    showGameOver() {
+        this.gameOverVisible = true;
+        try {
+            const el = document.getElementById('game-over-overlay');
+            if (el) { el.classList.remove('hidden'); el.classList.add('visible'); }
+            const btn = document.getElementById('try-again-button');
+            if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); }
+        } catch (e) { /* ignore when not in browser */ }
+    }
+
+    setupTryAgainButton() {
+        try {
+            const btn = document.getElementById('try-again-button');
+            if (!btn) return;
+            btn.addEventListener('click', () => {
+                try { window.location.reload(); } catch (e) { /* ignore when not in browser */ }
+            });
+        } catch (e) { /* ignore when not in browser */ }
     }
 
     // check if any puffer fish was hit by the character's slap (one-shot)
