@@ -20,6 +20,7 @@ class World {
         this.draw();
         this.setWorld();
         this.setupTryAgainButton();
+        this.setupPlayAgainButton();
 
         this.run();
     }
@@ -96,9 +97,87 @@ class World {
             const btn = document.getElementById('try-again-button');
             if (!btn) return;
             btn.addEventListener('click', () => {
-                try { window.location.reload(); } catch (e) { /* ignore when not in browser */ }
+                try {
+                    // hide game-over overlay
+                    const overlay = document.getElementById('game-over-overlay');
+                    if (overlay) { overlay.classList.remove('visible'); overlay.classList.add('hidden'); }
+                    btn.classList.remove('visible'); btn.classList.add('hidden');
+                    // directly show the static start screen element
+                    const start = document.getElementById('start-screen');
+                    if (start) { start.classList.remove('hidden'); start.classList.add('visible'); }
+
+                    // Try to reset in-memory game state to avoid the overlay reappearing
+                    try {
+                        const w = window.world;
+                        if (w && w.character) {
+                            const c = w.character;
+                            // restore character to alive state and default position
+                            c.energy = 100;
+                            c.x = 100; c.y = 250;
+                            c.animationFrozen = false;
+                            c.deathSequenceStarted = false;
+                            c.electroDeathStarted = false;
+                            c.slapping = false;
+                            // clear throwable objects and other transient arrays
+                            if (Array.isArray(w.throwableObjects)) w.throwableObjects.length = 0;
+                            // reset UI bars
+                            if (w.statusbarEnergy && typeof w.statusbarEnergy.setPercentage === 'function') w.statusbarEnergy.setPercentage(c.energy);
+                            if (w.statusbarFinal && typeof w.statusbarFinal.hide === 'function') w.statusbarFinal.hide();
+                            // clear gameOver flag so checkGameOver doesn't re-show overlay
+                            w.gameOverVisible = false;
+                        }
+                    } catch (e) { /* ignore state-reset errors */ }
+
+                    // Force-hide overlay element (style backup) in case CSS class toggles race
+                    try {
+                        const overlayEl = document.getElementById('game-over-overlay');
+                        if (overlayEl) overlayEl.style.display = 'none';
+                    } catch (e) { /* ignore */ }
+
+                    // Fallback: if overlay still shows after a short delay, reload to guarantee fresh state
+                    setTimeout(() => {
+                        const stillVisible = document.getElementById('game-over-overlay')?.classList.contains('visible') || document.getElementById('game-over-overlay')?.style.display !== 'none';
+                        if (stillVisible) {
+                            try { window.location.reload(); } catch (e) { /* ignore when not in browser */ }
+                        }
+                    }, 250);
+                } catch (e) { /* ignore when not in browser */ }
             });
         } catch (e) { /* ignore when not in browser */ }
+    }
+
+    setupPlayAgainButton() {
+        try {
+            const btn = document.getElementById('play-again-button');
+            if (!btn) return;
+            btn.addEventListener('click', () => {
+                try {
+                    const overlay = document.getElementById('you-win-overlay');
+                    if (overlay) { overlay.classList.remove('visible'); overlay.classList.add('hidden'); overlay.style.display = 'none'; }
+                    btn.classList.remove('visible'); btn.classList.add('hidden');
+                    const start = document.getElementById('start-screen');
+                    if (start) { start.classList.remove('hidden'); start.classList.add('visible'); }
+                    // try to reset in-memory world state similar to Try Again
+                    try {
+                        const w = window.world;
+                        if (w && w.character) {
+                            const c = w.character;
+                            c.energy = 100; c.x = 100; c.y = 250; c.animationFrozen = false; c.deathSequenceStarted = false; c.electroDeathStarted = false; c.slapping = false;
+                            if (Array.isArray(w.throwableObjects)) w.throwableObjects.length = 0;
+                            if (w.statusbarEnergy && typeof w.statusbarEnergy.setPercentage === 'function') w.statusbarEnergy.setPercentage(c.energy);
+                            if (w.statusbarFinal && typeof w.statusbarFinal.hide === 'function') w.statusbarFinal.hide();
+                            w.gameOverVisible = false;
+                        }
+                    } catch (e) { }
+                    setTimeout(() => {
+                        const stillVisible = document.getElementById('you-win-overlay')?.classList.contains('visible') || document.getElementById('you-win-overlay')?.style.display !== 'none';
+                        if (stillVisible) {
+                            try { window.location.reload(); } catch (e) { }
+                        }
+                    }, 250);
+                } catch (e) { }
+            });
+        } catch (e) { }
     }
 
     // check if any puffer fish was hit by the character's slap (one-shot)
@@ -301,6 +380,20 @@ class World {
         else if (enemy.life !== undefined) enemy.life = Math.max(0, enemy.life - 20);
         if (!this.statusbarFinal.visible) this.statusbarFinal.show();
         this.statusbarFinal.setPercentage(enemy.life);
+        // if the enemy is dead (life <= 0 or flagged dead), show the You Win screen
+        const enemyDead = (typeof enemy.dead !== 'undefined' && enemy.dead) || (typeof enemy.life !== 'undefined' && enemy.life <= 0);
+        if (enemyDead) {
+            this.showYouWin();
+        }
+    }
+
+    showYouWin() {
+        try {
+            const el = document.getElementById('you-win-overlay');
+            if (el) { el.classList.remove('hidden'); el.classList.add('visible'); }
+            const btn = document.getElementById('play-again-button');
+            if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); }
+        } catch (e) { /* ignore when not in browser */ }
     }
 
     playDeathAnimationThenRemove(enemy, arrayRef, idx, imagesArray) {

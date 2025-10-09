@@ -101,15 +101,30 @@ canvas {
 /* centered panel box with rounded corners and white border */
 .game-over-box {
     width: min(520px, 90%);
-    padding: 28px 20px;
+    height: 320px; /* fixed height so all overlays match */
+    padding: 18px 20px;
     background: rgba(4, 28, 88, 0.95);
     border-radius: 14px;
     border: 3px solid #fff; /* white border */
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
+    justify-content: center;
     pointer-events: auto; /* allow clicks inside the box */
+}
+
+/* Start screen (reuses the box styling) */
+#start-screen { pointer-events: auto; z-index: 10000; }
+#start-button {
+    padding: 8px 18px;
+    font-family: var(--final-font-family);
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    background: #062751;
+    color: #fff;
 }
 
 #game-over-overlay .game-over-content {
@@ -119,6 +134,10 @@ canvas {
     text-align: center;
     pointer-events: auto;
     text-transform: lowercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto; /* allow content area to grow inside fixed box */
 }
 
 #try-again-button {
@@ -135,8 +154,27 @@ canvas {
     display: block;
 }
 
+/* You win title image sizing inside the overlay */
+#you-win-overlay .game-over-content img {
+    width: auto;
+    max-width: 85%;
+    max-height: 140px; /* constrain height so title fits the box */
+    height: auto;
+    display: block;
+}
+
+/* Make play-again button match the Try Again button small size */
+#play-again-button img {
+    width: 220px;
+    height: auto;
+    display: block;
+}
+
 .game-over-content + #try-again-button {
     /* kept for compatibility but gap handles spacing */
+    margin-top: 0;
+}
+.game-over-content + #play-again-button {
     margin-top: 0;
 }
 .hidden { display: none; }

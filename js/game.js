@@ -7,6 +7,28 @@ function init() {
     world = new World(canvas, keyboard);
 }
 
+function showStartScreen() {
+    const start = document.getElementById('start-screen');
+    if (start) { start.classList.remove('hidden'); start.classList.add('visible'); }
+}
+
+function hideStartScreen() {
+    const start = document.getElementById('start-screen');
+    if (start) { start.classList.remove('visible'); start.classList.add('hidden'); }
+}
+
+window.addEventListener('load', () => {
+    // show start screen; attach start button
+    showStartScreen();
+    const btn = document.getElementById('start-button');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            hideStartScreen();
+            init();
+        });
+    }
+});
+
 window.addEventListener("keydown", (event) => {  
         
     if (event.key == "ArrowLeft") { // left arrow

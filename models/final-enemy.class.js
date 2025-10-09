@@ -79,7 +79,7 @@ class FinalEnemy extends MovableObject {
                 this.playAnimation(this.IMAGES_FLOATING);
             }
             i++;
-            if (world.character.x > 1600 && !this.hadFirstContact) {
+            if (typeof world !== 'undefined' && world && world.character && typeof world.character.x !== 'undefined' && world.character.x > 1600 && !this.hadFirstContact) {
                 i = 0;
                 this.hadFirstContact = true;
                 // when the final enemy appears first time, make sure world shows the life bar
