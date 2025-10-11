@@ -115,7 +115,30 @@ canvas {
 }
 
 /* Start screen (reuses the box styling) */
-#start-screen { pointer-events: auto; z-index: 10000; }
+#start-screen { 
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    background-color: rgba(4, 28, 88, 0.6); /* dim backdrop */
+    z-index: 10000;
+}
+
+#start-screen .game-over-content {
+    font-family: var(--final-font-family);
+    color: #fff;
+    font-size: 72px;
+    text-align: center;
+    pointer-events: auto;
+    text-transform: lowercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto; /* allow content area to grow inside fixed box */
+}
+
 #start-button {
     padding: 8px 18px;
     font-family: var(--final-font-family);
@@ -155,12 +178,25 @@ canvas {
 }
 
 /* You win title image sizing inside the overlay */
-#you-win-overlay .game-over-content img {
-    width: auto;
-    max-width: 85%;
-    max-height: 140px; /* constrain height so title fits the box */
-    height: auto;
-    display: block;
+#you-win-overlay .game-over-content {
+    font-family: var(--final-font-family);
+    color: #fff;
+    font-size: 72px;
+    text-align: center;
+    pointer-events: auto;
+    text-transform: lowercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+}
+
+#play-again-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
 }
 
 /* Make play-again button match the Try Again button small size */
@@ -177,5 +213,11 @@ canvas {
 .game-over-content + #play-again-button {
     margin-top: 0;
 }
-.hidden { display: none; }
-.visible { display: flex; pointer-events: auto; }
+.hidden { 
+    display: none;
+ }
+
+.visible {
+    display: flex;
+    pointer-events: auto;
+}
