@@ -21,6 +21,13 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        // capture initial collectable positions so we can restore them on restart
+        try {
+            this.initialCoinsData = (this.level.coins || []).map(c => ({ x: c.x, y: c.y }));
+            this.initialBottlesData = (this.level.bottles || []).map(b => ({ x: b.x, y: b.y, options: { collectible: !!b.collectible || true, thrown: !!b.thrown, otherDirection: !!b.otherDirection } }));
+            // capture how many final enemies were defined so we can recreate them on restart
+            this.initialFinalEnemyCount = (this.level.finalEnemy || []).length || 0;
+        } catch (e) { this.initialCoinsData = []; this.initialBottlesData = []; this.initialFinalEnemyCount = 0; }
         this.setupTryAgainButton();
         this.setupPlayAgainButton();
 
@@ -127,6 +134,7 @@ class World {
                             c.slapping = false;
                             // clear throwable objects and other transient arrays
                             if (Array.isArray(w.throwableObjects)) w.throwableObjects.length = 0;
+                            if (typeof w.resetCollectables === 'function') w.resetCollectables();
                             // reset UI bars
                             if (w.statusbarEnergy && typeof w.statusbarEnergy.setPercentage === 'function') w.statusbarEnergy.setPercentage(c.energy);
                             if (w.statusbarFinal && typeof w.statusbarFinal.hide === 'function') w.statusbarFinal.hide();
@@ -171,6 +179,7 @@ class World {
                             const c = w.character;
                             c.energy = 100; c.x = 100; c.y = 250; c.animationFrozen = false; c.deathSequenceStarted = false; c.electroDeathStarted = false; c.slapping = false;
                             if (Array.isArray(w.throwableObjects)) w.throwableObjects.length = 0;
+                                if (typeof w.resetCollectables === 'function') w.resetCollectables();
                             if (w.statusbarEnergy && typeof w.statusbarEnergy.setPercentage === 'function') w.statusbarEnergy.setPercentage(c.energy);
                             if (w.statusbarFinal && typeof w.statusbarFinal.hide === 'function') w.statusbarFinal.hide();
                             w.gameOverVisible = false;
@@ -188,6 +197,30 @@ class World {
                 } catch (e) { }
             });
         } catch (e) { }
+    }
+
+    // recreate coins and bottles from initial captured positions
+    resetCollectables() {
+        try {
+            // restore coins
+            if (Array.isArray(this.initialCoinsData)) {
+                this.level.coins = this.initialCoinsData.map(d => new Coin(d.x, d.y));
+            }
+            // restore bottles (throwable objects placed in the level)
+            if (Array.isArray(this.initialBottlesData)) {
+                this.level.bottles = this.initialBottlesData.map(d => new ThrowableObject(d.x, d.y, d.options));
+            }
+            // restore final enemy(s) if the level originally had them
+            if (typeof this.initialFinalEnemyCount === 'number' && this.initialFinalEnemyCount > 0) {
+                this.level.finalEnemy = [];
+                for (let i = 0; i < this.initialFinalEnemyCount; i++) {
+                    const fe = new FinalEnemy();
+                    this.level.finalEnemy.push(fe);
+                }
+            }
+            // clear any spawned throwable objects from runtime
+            if (Array.isArray(this.throwableObjects)) this.throwableObjects.length = 0;
+        } catch (e) { /* ignore in non-browser env */ }
     }
 
     // check if any puffer fish was hit by the character's slap (one-shot)
