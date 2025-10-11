@@ -40,15 +40,17 @@
     <h1>Sharkie</h1>
     <canvas id="canvas" width="720" height="480"></canvas>
     <!-- Static Start Screen (shown by default) -->
-    <div id="start-screen" class="hidden">
-        <div class="game-over-box">
+    <div id="start-screen" class="visible background-blue">
+        <div class="start-screen-box">
             <div class="game-over-content">Sharkie</div>
-            <button id="start-button">Start</button>
+            <button id="start-button" onclick="hideStartScreen();">
+                <img src="img/6.Botones/Start/2.png" alt="Start">
+            </button>
         </div>
     </div>
     <!-- Static Game Over overlay (shown via CSS class) -->
     <div id="game-over-overlay" class="hidden">
-        <div class="game-over-box">
+        <div class="game-over-box hidden">
             <div class="game-over-content">game over</div>
             <button id="try-again-button" class="hidden">
                 <img src="img/6.Botones/Try again/Recurso 17.png" alt="Try again">
@@ -57,7 +59,7 @@
     </div>
     <!-- Static You Win overlay (shown when final enemy defeated) -->
     <div id="you-win-overlay" class="hidden">
-        <div class="game-over-box">
+        <div class="you-win-box hidden">
             <div class="game-over-content">you win</div>
             <button id="play-again-button" class="hidden">
                 <img src="img/6.Botones/Try again/Recurso 17.png" alt="Play again">

@@ -9,12 +9,20 @@ function init() {
 
 function showStartScreen() {
     const start = document.getElementById('start-screen');
-    if (start) { start.classList.remove('hidden'); start.classList.add('visible'); }
+    const startBox = document.querySelector('.start-screen-box');
+    if (start) { start.classList.remove('hidden'); start.classList.add('visible'); start.style.display = 'flex'; }
+    if (startBox) { startBox.classList.remove('hidden'); startBox.classList.add('visible'); startBox.style.display = 'flex'; }
 }
 
 function hideStartScreen() {
     const start = document.getElementById('start-screen');
-    if (start) { start.classList.remove('visible'); start.classList.add('hidden'); }
+    const startBox = document.querySelector('.start-screen-box');
+    if (start) {
+        start.classList.remove('visible'); start.classList.add('hidden');
+        start.style.display = 'none';
+        start.classList.remove('background-blue'); start.classList.add('background-unset');
+    }
+    if (startBox) { startBox.classList.remove('visible'); startBox.classList.add('hidden'); startBox.style.display = 'none'; }
 }
 
 window.addEventListener('load', () => {

@@ -87,7 +87,7 @@ canvas {
 
 /* Game over overlay styles */
 /* full-screen dimming backdrop */
-#game-over-overlay {
+#game-over-overlay, #you-win-overlay {
     position: fixed;
     left: 0; top: 0; right: 0; bottom: 0;
     display: flex;
@@ -99,7 +99,7 @@ canvas {
 }
 
 /* centered panel box with rounded corners and white border */
-.game-over-box {
+.game-over-box, .start-screen-box, .you-win-box {
     width: min(520px, 90%);
     height: 320px; /* fixed height so all overlays match */
     padding: 18px 20px;
@@ -122,7 +122,6 @@ canvas {
     justify-content: center;
     align-items: center;
     pointer-events: auto;
-    background-color: rgba(4, 28, 88, 0.6); /* dim backdrop */
     z-index: 10000;
 }
 
@@ -139,17 +138,6 @@ canvas {
     flex: 1 1 auto; /* allow content area to grow inside fixed box */
 }
 
-#start-button {
-    padding: 8px 18px;
-    font-family: var(--final-font-family);
-    font-size: 20px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: 2px solid #fff;
-    background: #062751;
-    color: #fff;
-}
-
 #game-over-overlay .game-over-content {
     font-family: var(--final-font-family);
     color: #fff;
@@ -163,7 +151,7 @@ canvas {
     flex: 1 1 auto; /* allow content area to grow inside fixed box */
 }
 
-#try-again-button {
+#try-again-button, #start-button {
     background: transparent;
     border: none;
     padding: 0;
@@ -171,7 +159,7 @@ canvas {
     display: inline-block;
 }
 
-#try-again-button img {
+#try-again-button img, #start-button img {
     width: 220px; /* reasonable default size, adjust if needed */
     height: auto;
     display: block;
@@ -217,7 +205,27 @@ canvas {
     display: none;
  }
 
+#start-screen.hidden,
+#game-over-overlay.hidden,
+#you-win-overlay.hidden {
+    display: none !important;
+}
+
 .visible {
     display: flex;
     pointer-events: auto;
+}
+
+#start-screen.visible,
+#game-over-overlay.visible,
+#you-win-overlay.visible {
+    display: flex !important;
+}
+
+.background-blue {
+    background-color: rgba(4, 28, 88, 0.6); /* dim backdrop */
+}
+
+.background-unset {
+    background-color: unset;
 }
