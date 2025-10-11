@@ -12,6 +12,8 @@ class World {
     throwableObjects = [];
     lastThrowTime = 0; // Cooldown for throwing bottles
     gameOverVisible = false;
+    youWinVisible = false;
+    youWinTimeoutId = null;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -78,7 +80,12 @@ class World {
     checkGameOver() {
         if (this.gameOverVisible) return;
         if (this.character && typeof this.character.isDead === 'function' && this.character.isDead()) {
-            this.showGameOver();
+            // only show the overlay once the character's death animation sequence finished
+            // death sequences should set `this.character.deadAnimationFinished = true` when done
+            if (this.character.deadAnimationFinished) {
+                this.showGameOver();
+            }
+            // otherwise, the death-sequence handlers (poison/electro) will call showGameOver when appropriate
         }
     }
 
@@ -167,6 +174,9 @@ class World {
                             if (w.statusbarEnergy && typeof w.statusbarEnergy.setPercentage === 'function') w.statusbarEnergy.setPercentage(c.energy);
                             if (w.statusbarFinal && typeof w.statusbarFinal.hide === 'function') w.statusbarFinal.hide();
                             w.gameOverVisible = false;
+                            // also reset you-win visibility state and clear pending timeout
+                            w.youWinVisible = false;
+                            if (w.youWinTimeoutId) { clearTimeout(w.youWinTimeoutId); w.youWinTimeoutId = null; }
                         }
                     } catch (e) { }
                     setTimeout(() => {
@@ -277,15 +287,22 @@ class World {
     finalizePoisonDeathFrame(lastPath) {
         this.setCharacterImgByPath(lastPath);
         this.character.animationFrozen = true;
-        this.startCharacterFall();
+        // start fall and when finished show Game Over overlay
+        this.startCharacterFall(() => {
+            try { this.character.deadAnimationFinished = true; } catch (e) {}
+            try { this.showGameOver(); } catch (e) {}
+        });
     }
 
     startCharacterFall() {
         const targetY = this.ctx.canvas.height + 200;
         const fallSpeed = 6;
+        // allow optional callback when fall completes
+        const args = Array.prototype.slice.call(arguments);
+        const onComplete = typeof args[0] === 'function' ? args[0] : null;
         const fallInterval = setInterval(() => {
             if (this.character.y < targetY) this.character.y += fallSpeed;
-            else { this.character.y = targetY; clearInterval(fallInterval); }
+            else { this.character.y = targetY; clearInterval(fallInterval); if (onComplete) onComplete(); }
         }, 1000 / 60);
     }
 
@@ -308,6 +325,13 @@ class World {
         const imgs = this.character.IMAGES_DEAD_ELECTRO || [];
         if (imgs.length) this.setCharacterImgByPath(imgs[imgs.length - 1]);
         this.character.animationFrozen = true;
+        // show the final frame for a short moment before showing Game Over
+        try {
+            setTimeout(() => {
+                try { this.character.deadAnimationFinished = true; } catch (e) {}
+                try { this.showGameOver(); } catch (e) {}
+            }, 1200); // 1.2s delay so player sees final death frame
+        } catch (e) { }
     }
 
     checkThrowObjects() {
@@ -388,11 +412,22 @@ class World {
     }
 
     showYouWin() {
+        // show you-win overlay after a short delay so final enemy death animation can be seen
+        if (this.youWinVisible) return; // already scheduled or visible
+        this.youWinVisible = true;
         try {
-            const el = document.getElementById('you-win-overlay');
-            if (el) { el.classList.remove('hidden'); el.classList.add('visible'); }
-            const btn = document.getElementById('play-again-button');
-            if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); }
+            // clear any previous timeout
+            if (this.youWinTimeoutId) { clearTimeout(this.youWinTimeoutId); this.youWinTimeoutId = null; }
+            this.youWinTimeoutId = setTimeout(() => {
+                try {
+                    const el = document.getElementById('you-win-overlay');
+                    if (el) { el.classList.remove('hidden'); el.classList.add('visible'); el.style.display = 'flex'; }
+                    const box = document.querySelector('.you-win-box');
+                    if (box) { box.classList.remove('hidden'); box.classList.add('visible'); box.style.display = 'flex'; }
+                    const btn = document.getElementById('play-again-button');
+                    if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); btn.style.display = 'inline-block'; }
+                } catch (e) { /* ignore DOM errors */ }
+            }, 1200); // default 1200ms delay
         } catch (e) { /* ignore when not in browser */ }
     }
 

@@ -50,9 +50,9 @@
     </div>
     <!-- Static Game Over overlay (shown via CSS class) -->
     <div id="game-over-overlay" class="hidden">
-        <div class="game-over-box hidden">
+        <div class="game-over-box">
             <div class="game-over-content">game over</div>
-            <button id="try-again-button" class="hidden">
+            <button id="try-again-button" class="hidden" onclick="showStartScreen();">
                 <img src="img/6.Botones/Try again/Recurso 17.png" alt="Try again">
             </button>
         </div>
@@ -61,7 +61,7 @@
     <div id="you-win-overlay" class="hidden">
         <div class="you-win-box hidden">
             <div class="game-over-content">you win</div>
-            <button id="play-again-button" class="hidden">
+            <button id="play-again-button" class="hidden" onclick="showStartScreen();">
                 <img src="img/6.Botones/Try again/Recurso 17.png" alt="Play again">
             </button>
         </div>

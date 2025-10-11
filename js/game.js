@@ -5,6 +5,9 @@ let keyboard = new Keyboard();
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
+    // expose the world object on window so other modules (world reset handlers)
+    // can reliably access and reset the game state (setupTryAgainButton uses window.world)
+    try { window.world = world; } catch (e) { /* ignore when not in browser-like env */ }
 }
 
 function showStartScreen() {
@@ -36,6 +39,18 @@ window.addEventListener('load', () => {
         });
     }
 });
+
+// fallback helper in case you want to trigger the overlay from outside
+function showGameOverOverlay() {
+    try {
+        const overlay = document.getElementById('game-over-overlay');
+        const box = document.querySelector('.game-over-box');
+        const btn = document.getElementById('try-again-button');
+        if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('visible'); overlay.style.display = 'flex'; }
+        if (box) { box.classList.remove('hidden'); box.classList.add('visible'); box.style.display = 'flex'; }
+        if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); btn.style.display = 'inline-block'; }
+    } catch (e) { /* ignore */ }
+}
 
 window.addEventListener("keydown", (event) => {  
         
