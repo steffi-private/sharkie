@@ -381,13 +381,20 @@ class World {
     }
 
     spawnAndConsumeBottle(now) {
+        // defensive check: ensure the player actually has a poison/bottle to throw
+        if (!(this.statusbarPoisson && this.statusbarPoisson.numberOfPoissons > 0)) {
+            try { if (this.statusbarPoisson && typeof this.statusbarPoisson.flash === 'function') this.statusbarPoisson.flash(1000); } catch (e) {}
+            return false;
+        }
         const facingLeft = !!this.character.otherDirection;
         const spawnX = this.character.x + (facingLeft ? -20 : 90);
         const spawnY = this.character.y + 70;
         const bottle = this.createThrowable(spawnX, spawnY, facingLeft);
-        bottle.onThrow(); // reduce poison count
+        // reduce poison count in statusbar and mark thrown
+        try { bottle.onThrow(); } catch (e) {}
         this.throwableObjects.push(bottle);
         this.lastThrowTime = now;
+        return true;
     }
 
     createThrowable(spawnX, spawnY, facingLeft) {

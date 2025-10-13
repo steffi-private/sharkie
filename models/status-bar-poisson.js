@@ -9,6 +9,7 @@ class StatusbarPoisson extends DrawableObject {
     ];        
 
     numberOfPoissons = 0;
+    _flashUntil = 0; // timestamp until which the bar should flash
 
     constructor() {
         super();
@@ -29,6 +30,25 @@ class StatusbarPoisson extends DrawableObject {
 resolveImageIndex() {
     return Math.min(this.numberOfPoissons, this.IMAGES.length - 1);
 }
+
+    // Trigger a short visual flash on the status bar (duration in ms)
+    flash(duration = 1000) {
+        try { this._flashUntil = Date.now() + duration; } catch (e) { this._flashUntil = 0; }
+    }
+
+    // draw override: render the image and optionally a flashing overlay when triggered
+    draw(ctx) {
+        super.draw(ctx);
+        try {
+            if (this._flashUntil && Date.now() < this._flashUntil) {
+                ctx.save();
+                ctx.globalAlpha = 0.6;
+                ctx.fillStyle = 'red';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.restore();
+            }
+        } catch (e) { /* ignore drawing errors */ }
+    }
 
 
 }
