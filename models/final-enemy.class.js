@@ -9,6 +9,7 @@ class FinalEnemy extends MovableObject {
     speed = 10;// Default speed
 
     hadFirstContact = false;
+    moveInterval = null; // store interval id for movement so we can clear it
 
     IMAGES_INTRO = [
         'img/2.Enemy/3.FinalEnemy/1.Introduce/1.png',
@@ -86,8 +87,37 @@ class FinalEnemy extends MovableObject {
                 if (typeof world !== 'undefined' && world.statusbarFinal) {
                     world.statusbarFinal.show();
                 }
+                // start slow leftward movement after first contact
+                this.startSlowLeftMovement();
             }
         }, 1000 / 5); // 5 frames per second
+    }
+
+    startSlowLeftMovement() {
+        // guard: don't start multiple intervals
+        if (this.moveInterval || this.dead) return;
+
+        // target x where the boss should stop moving left (you can adjust)
+        const targetX = 1200;
+        const speedPerFrame = 0.5; // pixels per frame (slow)
+        const fps = 60;
+
+        this.moveInterval = setInterval(() => {
+            if (this.dead) {
+                clearInterval(this.moveInterval);
+                this.moveInterval = null;
+                return;
+            }
+
+            // move left slowly until targetX reached
+            if (this.x > targetX) {
+                this.x -= speedPerFrame;
+            } else {
+                // reached desired position; stop movement but keep floating behavior
+                clearInterval(this.moveInterval);
+                this.moveInterval = null;
+            }
+        }, 1000 / fps);
     }
 
     takeDamage(amount) {
