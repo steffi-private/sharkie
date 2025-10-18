@@ -10,6 +10,12 @@ class FinalEnemy extends MovableObject {
 
     hadFirstContact = false;
     moveInterval = null; // store interval id for movement so we can clear it
+    // attack related
+    attacking = false;
+    lastAttackTime = 0;
+    attackCooldown = 2000; // ms between attacks
+    attackRange = 400; // distance in px to start attack
+    swallowRange = 0; // when character is directly in front (used with condition character.x + character.width > this.x)
 
     IMAGES_INTRO = [
         'img/2.Enemy/3.FinalEnemy/1.Introduce/1.png',
@@ -55,6 +61,15 @@ class FinalEnemy extends MovableObject {
         'img/2.Enemy/3.FinalEnemy/Dead/Mesa de trabajo 2 copia 10.png'
     ];
 
+    IMAGES_ATTACK = [
+        'img/2.Enemy/3.FinalEnemy/Attack/1.png',
+        'img/2.Enemy/3.FinalEnemy/Attack/2.png',
+        'img/2.Enemy/3.FinalEnemy/Attack/3.png',
+        'img/2.Enemy/3.FinalEnemy/Attack/4.png',
+        'img/2.Enemy/3.FinalEnemy/Attack/5.png',
+        'img/2.Enemy/3.FinalEnemy/Attack/6.png'
+    ];
+
     life = 100; // Life percentage (0 to 100)
  
     constructor() {
@@ -64,10 +79,12 @@ class FinalEnemy extends MovableObject {
         this.loadImages(this.IMAGES_INTRO);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
+        this.loadImages(this.IMAGES_ATTACK);
         this.life = 100; // final enemy life percentage
         this.hurtPlaying = false;
         this.dead = false;
         this.animate();
+        this.startAttackLoop();
     }
 
     animate() {
@@ -185,6 +202,76 @@ class FinalEnemy extends MovableObject {
                         clearInterval(fallInterval);
                     }
                 }, 1000 / 60); // 60 FPS fall
+            }
+        }, 1000 / fps);
+    }
+
+    startAttackLoop() {
+        // check periodically if we should attack
+        setInterval(() => {
+            try {
+                if (this.dead) return;
+                if (typeof world === 'undefined' || !world || !world.character) return;
+                const c = world.character;
+                // don't attack until the boss has been discovered
+                if (!this.hadFirstContact) return;
+                const now = Date.now();
+                if (now - this.lastAttackTime < this.attackCooldown) return;
+                // compute horizontal distance from boss to character center
+                const charCenterX = (c.x + (c.width || 0) / 2) || 0;
+                const bossCenterX = this.x + (this.width || 0) / 2;
+                const distance = Math.abs(bossCenterX - charCenterX);
+                if (distance <= this.attackRange) {
+                    this.performAttack(c);
+                    this.lastAttackTime = now;
+                }
+            } catch (e) { /* defensive: ignore */ }
+        }, 200);
+    }
+
+    performAttack(character) {
+        if (this.attacking || this.dead) return;
+        this.attacking = true;
+        // play attack frames and move slightly toward the character while attacking
+        const imgs = this.IMAGES_ATTACK || [];
+        if (!imgs.length) { this.attacking = false; return; }
+        let k = 0; const fps = 8;
+        const prevImg = this.img;
+        const interval = setInterval(() => {
+            const path = imgs[k % imgs.length];
+            if (this.imageCache && this.imageCache[path]) this.img = this.imageCache[path];
+            else { const i = new Image(); i.src = path; this.img = i; }
+
+            // move a bit toward the character during attack for a biting/swallowing feel
+            try {
+                if (character && typeof character.x !== 'undefined') {
+                    // move horizontally toward the character
+                    if (character.x + (character.width || 0) / 2 < this.x + (this.width || 0) / 2) {
+                        this.x -= 6; // move left
+                    } else {
+                        this.x += 6; // move right
+                    }
+                    // swallow condition: character is directly in front (user requirement)
+                    if ((character.x + (character.width || 0)) > this.x) {
+                        // apply heavy damage
+                        if (typeof character.isHit === 'function') {
+                            character.isHit(100);
+                        }
+                        // update global statusbar if available
+                        if (typeof world !== 'undefined' && world && world.statusbarEnergy) {
+                            world.statusbarEnergy.setPercentage(character.energy);
+                        }
+                    }
+                }
+            } catch (e) { /* ignore movement errors */ }
+
+            k++;
+            if (k >= imgs.length) {
+                clearInterval(interval);
+                this.attacking = false;
+                // restore image to floating first frame if available
+                if (this.imageCache && this.imageCache[this.IMAGES_FLOATING[0]]) this.img = this.imageCache[this.IMAGES_FLOATING[0]];
+                else this.loadImage(this.IMAGES_FLOATING[0]);
             }
         }, 1000 / fps);
     }
