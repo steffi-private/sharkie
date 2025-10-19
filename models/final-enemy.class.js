@@ -10,6 +10,11 @@ class FinalEnemy extends MovableObject {
 
     hadFirstContact = false;
     moveInterval = null; // store interval id for movement so we can clear it
+    // animation control
+    animationInterval = null; // store interval id for the main animation loop
+    introFramesCount = 10; // how many animation ticks show the intro before floating
+    animationFPS = 5; // frames per second for the main animate loop
+    visible = false; // when false, DrawableObject.draw will skip rendering
     // attack related
     attacking = false;
     lastAttackTime = 0;
@@ -85,31 +90,65 @@ class FinalEnemy extends MovableObject {
         this.life = 100; // final enemy life percentage
         this.hurtPlaying = false;
         this.dead = false;
+        // By default the final enemy is hidden until the player reaches the discovery X.
+        this.visible = false;
         this.animate();
         this.startAttackLoop();
     }
 
     animate() {
         let i = 0;
-        setInterval(() => {
-            if (this.dead) return; // stop updating animation when dead
-            if (i < 10) {
-                this.playAnimation(this.IMAGES_INTRO);
-            } else {
-                this.playAnimation(this.IMAGES_FLOATING);
-            }
-            i++;
-            if (typeof world !== 'undefined' && world && world.character && typeof world.character.x !== 'undefined' && world.character.x > 1600 && !this.hadFirstContact) {
-                i = 0;
-                this.hadFirstContact = true;
-                // when the final enemy appears first time, make sure world shows the life bar
-                if (typeof world !== 'undefined' && world.statusbarFinal) {
-                    world.statusbarFinal.show();
+        // clear any previous animation interval just in case
+        if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+            this.animationInterval = null;
+        }
+
+        this.animationInterval = setInterval(() => {
+            try {
+                // if dead, stop main animation loop to free resources
+                if (this.dead) {
+                    this.stopAnimation();
+                    return;
                 }
-                // start slow leftward movement after first contact
-                this.startSlowLeftMovement();
+
+                // If the boss hasn't been discovered yet, check discovery condition
+                // but do NOT render or progress intro frames until discovered.
+                if (!this.hadFirstContact) {
+                    if (typeof world !== 'undefined' && world && world.character && typeof world.character.x !== 'undefined' && world.character.x > 1600) {
+                        // discovery: make visible and start intro sequence
+                        this.hadFirstContact = true;
+                        this.visible = true;
+                        i = 0;
+                        // show final enemy life bar if available
+                        if (typeof world !== 'undefined' && world.statusbarFinal) {
+                            world.statusbarFinal.show();
+                        }
+                        // start slow leftward movement after first contact
+                        this.startSlowLeftMovement();
+                    }
+                    // not yet discovered: skip animation rendering
+                    return;
+                }
+
+                // normal animation after discovery
+                if (i < this.introFramesCount) {
+                    this.playAnimation(this.IMAGES_INTRO);
+                } else {
+                    this.playAnimation(this.IMAGES_FLOATING);
+                }
+                i++;
+            } catch (e) { /* defensive: ignore animation errors */ }
+        }, 1000 / this.animationFPS);
+    }
+
+    stopAnimation() {
+        try {
+            if (this.animationInterval) {
+                clearInterval(this.animationInterval);
+                this.animationInterval = null;
             }
-        }, 1000 / 5); // 5 frames per second
+        } catch (e) { /* ignore */ }
     }
 
     startSlowLeftMovement() {
