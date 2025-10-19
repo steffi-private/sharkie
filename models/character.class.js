@@ -6,6 +6,7 @@ class Character extends MovableObject {
     speed =  10;// Default speed
     // when true, the regular animation loop will be paused (used for permanent death frame)
     animationFrozen = false;
+
     
     IMAGES_IDLE = [
         '../img/1.Sharkie/1.IDLE/1.png',
@@ -82,13 +83,16 @@ class Character extends MovableObject {
         '../img/1.Sharkie/4.Attack/Fin slap/7.png',
         '../img/1.Sharkie/4.Attack/Fin slap/8.png'
     ];
+    IMAGES_EATEN = [
+        ''
+    ];
     
     
     world;
-    
 
     constructor() {
-        super().loadImage('../img/1.Sharkie/1.IDLE/1.png');
+        super();
+        this.loadImage('../img/1.Sharkie/1.IDLE/1.png');
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_SWIM);
         this.loadImages(this.IMAGES_HURT_POISONED);
@@ -153,13 +157,4 @@ class Character extends MovableObject {
     }
     
     
-    
-
-
-
-
-
-    attack() {
-        // Implement attack logic here
-    }
 }

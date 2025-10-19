@@ -14,7 +14,7 @@ class FinalEnemy extends MovableObject {
     attacking = false;
     lastAttackTime = 0;
     attackCooldown = 2000; // ms between attacks
-    attackRange = 400; // distance in px to start attack
+    attackRange = 200; // distance in px to start attack
     swallowRange = 0; // when character is directly in front (used with condition character.x + character.width > this.x)
 
     IMAGES_INTRO = [
@@ -219,8 +219,8 @@ class FinalEnemy extends MovableObject {
                 if (now - this.lastAttackTime < this.attackCooldown) return;
                 // compute horizontal distance from boss to character center
                 const charCenterX = (c.x + (c.width || 0) / 2) || 0;
-                const bossCenterX = this.x + (this.width || 0) / 2;
-                const distance = Math.abs(bossCenterX - charCenterX);
+                const bossX = this.x;
+                const distance = Math.abs(bossX - charCenterX);
                 if (distance <= this.attackRange) {
                     this.performAttack(c);
                     this.lastAttackTime = now;
@@ -236,7 +236,7 @@ class FinalEnemy extends MovableObject {
         const imgs = this.IMAGES_ATTACK || [];
         if (!imgs.length) { this.attacking = false; return; }
         let k = 0; const fps = 8;
-        const prevImg = this.img;
+        
         const interval = setInterval(() => {
             const path = imgs[k % imgs.length];
             if (this.imageCache && this.imageCache[path]) this.img = this.imageCache[path];
@@ -260,6 +260,7 @@ class FinalEnemy extends MovableObject {
                         // update global statusbar if available
                         if (typeof world !== 'undefined' && world && world.statusbarEnergy) {
                             world.statusbarEnergy.setPercentage(character.energy);
+                            if (world.character.isDead()) this.startCharacterEatenSequence();
                         }
                     }
                 }
@@ -276,4 +277,24 @@ class FinalEnemy extends MovableObject {
         }, 1000 / fps);
     }
 
+    startCharacterEatenSequence() {
+        world.character.playAnimation(world.character.IMAGES_EATEN);
+        const imgs = world.character.IMAGES_EATEN || [];
+        if (imgs.length) world.setCharacterImgByPath(imgs[imgs.length - 1]);
+        world.character.animationFrozen = true;
+        // show the final frame for a short moment before showing Game Over
+        try {
+            setTimeout(() => {
+                try { world.character.deadAnimationFinished = true; } catch (e) {}
+                try { this.showGameOver(); } catch (e) {}
+                try {this.hadFirstContact = false;
+                    this.moveInterval = null; 
+                    this.attacking = false;
+                    this.lastAttackTime = 0;
+                } catch (e) {}
+            }, 1200); // 1.2s delay so player sees final death frame
+        } catch (e) { }
+    }
+
 }
+
