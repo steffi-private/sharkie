@@ -15,7 +15,12 @@ class DrawableObject {
     }
 
     draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        // only try to draw when this.img is a real HTMLImageElement (avoid uncaught canvas errors)
+        try {
+           if (this.img && (this.img instanceof HTMLImageElement || this.img instanceof Image) && this.img.complete) {
+                ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+            }
+        } catch (e) { /* defensive: ignore draw errors to avoid crashing the whole render loop */ }
     }
 
 

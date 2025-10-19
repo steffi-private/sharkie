@@ -147,15 +147,10 @@ class World {
                     try {
                         const overlayEl = document.getElementById('game-over-overlay');
                         if (overlayEl) overlayEl.style.display = 'none';
-                    } catch (e) { /* ignore */ }
+                    } catch (e) { /* ignore */ };
 
-                    // Fallback: if overlay still shows after a short delay, reload to guarantee fresh state
-                    setTimeout(() => {
-                        const stillVisible = document.getElementById('game-over-overlay')?.classList.contains('visible') || document.getElementById('game-over-overlay')?.style.display !== 'none';
-                        if (stillVisible) {
-                            try { window.location.reload(); } catch (e) { /* ignore when not in browser */ }
-                        }
-                    }, 250);
+                    // Reload the page to fully reinitialize index.html and start the game fresh
+                    try { window.location.reload(); } catch (e) { /* ignore when not in browser */ }
                 } catch (e) { /* ignore when not in browser */ }
             });
         } catch (e) { /* ignore when not in browser */ }

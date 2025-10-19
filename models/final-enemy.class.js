@@ -16,6 +16,8 @@ class FinalEnemy extends MovableObject {
     attackCooldown = 2000; // ms between attacks
     attackRange = 200; // distance in px to start attack
     swallowRange = 0; // when character is directly in front (used with condition character.x + character.width > this.x)
+    triggerCharacterEatenAfterAttack = false;
+
 
     IMAGES_INTRO = [
         'img/2.Enemy/3.FinalEnemy/1.Introduce/1.png',
@@ -210,7 +212,7 @@ class FinalEnemy extends MovableObject {
         // check periodically if we should attack
         setInterval(() => {
             try {
-                if (this.dead) return;
+                if (this.dead || world.character.animationFrozen) return;
                 if (typeof world === 'undefined' || !world || !world.character) return;
                 const c = world.character;
                 // don't attack until the boss has been discovered
@@ -260,7 +262,7 @@ class FinalEnemy extends MovableObject {
                         // update global statusbar if available
                         if (typeof world !== 'undefined' && world && world.statusbarEnergy) {
                             world.statusbarEnergy.setPercentage(character.energy);
-                            if (world.character.isDead()) this.startCharacterEatenSequence();
+                            if (world.character.isDead()) this.triggerCharacterEatenAfterAttack = true;
                         }
                     }
                 }
@@ -273,6 +275,17 @@ class FinalEnemy extends MovableObject {
                 // restore image to floating first frame if available
                 if (this.imageCache && this.imageCache[this.IMAGES_FLOATING[0]]) this.img = this.imageCache[this.IMAGES_FLOATING[0]];
                 else this.loadImage(this.IMAGES_FLOATING[0]);
+            
+            // If the character died during the attack, trigger the eaten sequence now
+                if (this.triggerCharacterEatenAfterAttack) {
+                    try {
+                        // ensure we only call once
+                        this.triggerCharacterEatenAfterAttack = false;
+                        this.startCharacterEatenSequence();
+                        // after eating, move slowly left until leaving canvas or gameover
+                        this.startSlowLeftMovement();
+                    } catch (e) { /* ignore */ }
+                }
             }
         }, 1000 / fps);
     }
@@ -288,11 +301,10 @@ class FinalEnemy extends MovableObject {
                 try { world.character.deadAnimationFinished = true; } catch (e) {}
                 try { this.showGameOver(); } catch (e) {}
                 try {this.hadFirstContact = false;
-                    this.moveInterval = null; 
                     this.attacking = false;
                     this.lastAttackTime = 0;
                 } catch (e) {}
-            }, 1200); // 1.2s delay so player sees final death frame
+            }, 800); // 800ms delay so player sees final death frame
         } catch (e) { }
     }
 
