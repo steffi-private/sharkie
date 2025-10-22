@@ -20,6 +20,9 @@ class FinalEnemy extends MovableObject {
     lastAttackTime = 0;
     attackCooldown = 2000; // ms between attacks
     attackRange = 200; // distance in px to start attack
+    // vertical tolerance in px: character must be within this many pixels vertically
+    // of the boss center to allow the attack to start
+    attackVerticalTolerance = 120;
     swallowRange = 0; // when character is directly in front (used with condition character.x + character.width > this.x)
     triggerCharacterEatenAfterAttack = false;
 
@@ -263,8 +266,14 @@ class FinalEnemy extends MovableObject {
                 const bossX = this.x;
                 const distance = Math.abs(bossX - charCenterX);
                 if (distance <= this.attackRange) {
-                    this.performAttack(c);
-                    this.lastAttackTime = now;
+                    // check vertical alignment: character should be roughly at the same height
+                    const charCenterY = (c.y + (c.height || 0) / 2) || 0;
+                    const bossCenterY = (this.y + (this.height || 0) / 2) || 0;
+                    const deltaY = Math.abs(bossCenterY - charCenterY);
+                    if (deltaY <= this.attackVerticalTolerance) {
+                        this.performAttack(c);
+                        this.lastAttackTime = now;
+                    }
                 }
             } catch (e) { /* defensive: ignore */ }
         }, 200);
