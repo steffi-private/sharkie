@@ -10,6 +10,7 @@ class StatusbarPoisson extends DrawableObject {
 
     numberOfPoissons = 0;
     _flashUntil = 0; // timestamp until which the bar should flash
+    MAX_POISSONS = 5;
 
     constructor() {
         super();
@@ -22,18 +23,34 @@ class StatusbarPoisson extends DrawableObject {
     }
     
     setnumberOfPoissons(numberOfPoissons) {
-    this.numberOfPoissons = numberOfPoissons;
-    let path = this.IMAGES[this.resolveImageIndex()];
-    this.img = this.imageCache[path];
+        // clamp to allowed range
+        const clamped = Math.max(0, Math.min(this.MAX_POISSONS, numberOfPoissons || 0));
+        this.numberOfPoissons = clamped;
+        let path = this.IMAGES[this.resolveImageIndex()];
+        this.img = this.imageCache[path];
 }
 
 resolveImageIndex() {
-    return Math.min(this.numberOfPoissons, this.IMAGES.length - 1);
+    // map 0..MAX_POISSONS -> image indices (IMAGES length may be 6 for 0..100 tiers)
+    // choose index proportional to numberOfPoissons
+    const max = this.MAX_POISSONS;
+    const idx = Math.round((this.numberOfPoissons / max) * (this.IMAGES.length - 1));
+    return Math.min(idx, this.IMAGES.length - 1);
 }
 
     // Trigger a short visual flash on the status bar (duration in ms)
     flash(duration = 1000) {
         try { this._flashUntil = Date.now() + duration; } catch (e) { this._flashUntil = 0; }
+    }
+
+    // Try to add one poison; returns true if added, false if at cap
+    tryAddOne() {
+        if (this.numberOfPoissons >= this.MAX_POISSONS) {
+            this.flash(800);
+            return false;
+        }
+        this.setnumberOfPoissons(this.numberOfPoissons + 1);
+        return true;
     }
 
     // draw override: render the image and optionally a flashing overlay when triggered

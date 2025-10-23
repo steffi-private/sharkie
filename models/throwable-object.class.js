@@ -44,9 +44,20 @@ class ThrowableObject extends CollectableObject {
 
     // When collected, increment poison status bar
     onCollect(world) {
-        if (world && world.statusbarPoisson && typeof world.statusbarPoisson.setnumberOfPoissons === 'function') {
-            const current = world.statusbarPoisson.numberOfPoissons || 0;
-            world.statusbarPoisson.setnumberOfPoissons(current + 1);
+        // If the world or statusbar isn't available, accept by default
+        if (!(world && world.statusbarPoisson)) return true;
+
+        // prefer tryAddOne which enforces the MAX_POISSONS cap and flashes when at cap
+        if (typeof world.statusbarPoisson.tryAddOne === 'function') {
+            const added = world.statusbarPoisson.tryAddOne();
+            // return true when added (so CollectableObject will mark collected),
+            // return false when not added (so object remains in world)
+            return added;
         }
+
+        // fallback: increment but clamp
+        const current = world.statusbarPoisson.numberOfPoissons || 0;
+        world.statusbarPoisson.setnumberOfPoissons(current + 1);
+        return true;
     }
 }
