@@ -54,18 +54,36 @@ resolveImageIndex() {
     }
 
     // draw override: render the image and optionally a flashing overlay when triggered
-    draw(ctx) {
+      draw(ctx) {
         super.draw(ctx);
         try {
             if (this._flashUntil && Date.now() < this._flashUntil) {
                 ctx.save();
-                ctx.globalAlpha = 0.6;
+                ctx.globalAlpha = 0.4;
                 ctx.fillStyle = 'red';
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+
+                const x = this.x + 7;
+                const y = this.y + this.height / 2 - 5;
+                const w = this.width - 5;
+                const h = this.height / 2;
+                const radius = Math.min(12, Math.min(w, h) * 0.12);
+
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + w - radius, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+                ctx.lineTo(x + w, y + h - radius);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+                ctx.lineTo(x + radius, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+                ctx.fill();
+
                 ctx.restore();
             }
         } catch (e) { /* ignore drawing errors */ }
     }
-
 
 }
