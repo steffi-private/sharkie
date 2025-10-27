@@ -42,14 +42,13 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.jellyFishs);
         this.addObjectsToMap(this.level.pufferFishs);
-        this.addObjectsToMap(this.level.finalEnemy);
         this.addObjectsToMap(this.level.coins);
         if (this.level.bottles) {
             this.addObjectsToMap(this.level.bottles);
         }
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character);
-
+        this.addObjectsToMap(this.level.finalEnemy);
         this.ctx.translate(-this.camera_x, 0);
 
         //fixed objects
