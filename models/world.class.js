@@ -99,12 +99,54 @@ class World {
 
     showGameOver() {
         this.gameOverVisible = true;
+        
+        // Stop all sounds
+        this.stopAllSounds();
+        
         try {
             const el = document.getElementById('game-over-overlay');
             if (el) { el.classList.remove('hidden'); el.classList.add('visible'); }
             const btn = document.getElementById('try-again-button');
             if (btn) { btn.classList.remove('hidden'); btn.classList.add('visible'); }
         } catch (e) { /* ignore when not in browser */ }
+    }
+
+    stopAllSounds() {
+        try {
+            // Stop background music
+            if (typeof backgroundMusic !== 'undefined' && backgroundMusic) {
+                backgroundMusic.pause();
+                backgroundMusic.currentTime = 0;
+            }
+            // Stop damage sound
+            if (this.damageSound) {
+                this.damageSound.pause();
+                this.damageSound.currentTime = 0;
+            }
+            // Stop ouch sound
+            if (this.ouchSound) {
+                this.ouchSound.pause();
+                this.ouchSound.currentTime = 0;
+            }
+            // Stop final enemy attack sound
+            if (this.level && this.level.finalEnemy) {
+                this.level.finalEnemy.forEach(enemy => {
+                    if (enemy.attackSound) {
+                        enemy.attackSound.pause();
+                        enemy.attackSound.currentTime = 0;
+                    }
+                });
+            }
+            // Stop throwable object collect sounds
+            if (this.level && this.level.bottles) {
+                this.level.bottles.forEach(bottle => {
+                    if (bottle.collectSound) {
+                        bottle.collectSound.pause();
+                        bottle.collectSound.currentTime = 0;
+                    }
+                });
+            }
+        } catch (e) { /* ignore audio errors */ }
     }
 
     setupTryAgainButton() {
