@@ -7,6 +7,7 @@ class FinalEnemy extends MovableObject {
     y = 100; // Initial y position
 
     speed = 10;// Default speed
+    attackSound = new Audio('audio/eating-sound-effect-36186.mp3');
 
     hadFirstContact = false;
     moveInterval = null; // store interval id for movement so we can clear it
@@ -282,6 +283,14 @@ class FinalEnemy extends MovableObject {
     performAttack(character) {
         if (this.attacking || this.dead) return;
         this.attacking = true;
+        
+        // Play attack sound
+        try {
+            this.attackSound.currentTime = 0;
+            this.attackSound.volume = 0.6;
+            this.attackSound.play().catch(err => console.log('Audio play failed:', err));
+        } catch (e) { /* ignore audio errors */ }
+        
         // play attack frames and move slightly toward the character while attacking
         const imgs = this.IMAGES_ATTACK || [];
         if (!imgs.length) { this.attacking = false; return; }

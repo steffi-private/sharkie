@@ -1,6 +1,7 @@
 let canvas; 
 let world;
 let keyboard = new Keyboard();
+let backgroundMusic = new Audio('audio/adventures-loop-music-226836.mp3');
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -8,6 +9,11 @@ function init() {
     // expose the world object on window so other modules (world reset handlers)
     // can reliably access and reset the game state (setupTryAgainButton uses window.world)
     try { window.world = world; } catch (e) { /* ignore when not in browser-like env */ }
+    
+    // Start background music in loop
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.3;
+    backgroundMusic.play().catch(err => console.log('Audio play failed:', err));
 }
 
 function showStartScreen() {

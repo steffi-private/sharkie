@@ -14,6 +14,8 @@ class World {
     gameOverVisible = false;
     youWinVisible = false;
     youWinTimeoutId = null;
+    damageSound = new Audio('audio/damage-40114.mp3');
+    ouchSound = new Audio('audio/ouch-116112.mp3');
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -275,6 +277,14 @@ class World {
 
     processJellyFishCollision(jellyFish) {
         if (!this.isEnemyWithinCharacterInnerHitbox(jellyFish)) return;
+        
+        // Play ouch sound
+        try {
+            this.ouchSound.currentTime = 0;
+            this.ouchSound.volume = 0.5;
+            this.ouchSound.play().catch(err => console.log('Audio play failed:', err));
+        } catch (e) { /* ignore audio errors */ }
+        
         this.character.isHit(1);
         this.statusbarEnergy.setPercentage(this.character.energy);
         if (this.character.isDead()) this.startPoisonDeathSequence();
@@ -339,6 +349,14 @@ class World {
 
     processPufferFishCollision(pufferFish) {
         if (!this.isEnemyWithinCharacterInnerHitbox(pufferFish)) return;
+        
+        // Play damage sound
+        try {
+            this.damageSound.currentTime = 0; // Reset sound to start for multiple hits
+            this.damageSound.volume = 0.5;
+            this.damageSound.play().catch(err => console.log('Audio play failed:', err));
+        } catch (e) { /* ignore audio errors */ }
+        
         this.character.isHit(2);
         this.statusbarEnergy.setPercentage(this.character.energy);
         if (this.character.isDead()) this.startElectroDeathSequence();

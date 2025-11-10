@@ -2,7 +2,8 @@ class ThrowableObject extends CollectableObject {
     
     acceleration = 2; // Gravity acceleration
     width = 65;
-    height = 65; 
+    height = 65;
+    collectSound = new Audio('audio/blip-131856.mp3'); 
 
     // options: { collectible?: boolean, thrown?: boolean, otherDirection?: boolean }
     constructor(x, y, options = {}) {
@@ -44,6 +45,12 @@ class ThrowableObject extends CollectableObject {
 
     // When collected, increment poison status bar
     onCollect(world) {
+        // Play collect sound
+        try {
+            this.collectSound.volume = 0.4;
+            this.collectSound.play().catch(err => console.log('Audio play failed:', err));
+        } catch (e) { /* ignore audio errors */ }
+
         // If the world or statusbar isn't available, accept by default
         if (!(world && world.statusbarPoisson)) return true;
 
