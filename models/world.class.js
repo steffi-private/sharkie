@@ -149,6 +149,15 @@ class World {
         } catch (e) { /* ignore audio errors */ }
     }
 
+    restartBackgroundMusic() {
+        try {
+            if (typeof backgroundMusic !== 'undefined' && backgroundMusic) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play().catch(err => console.log('Audio play failed:', err));
+            }
+        } catch (e) { /* ignore audio errors */ }
+    }
+
     setupTryAgainButton() {
         try {
             const btn = document.getElementById('try-again-button');
@@ -509,6 +518,10 @@ class World {
         // show you-win overlay after a short delay so final enemy death animation can be seen
         if (this.youWinVisible) return; // already scheduled or visible
         this.youWinVisible = true;
+        
+        // Stop all sounds when showing You Win screen
+        this.stopAllSounds();
+        
         try {
             // clear any previous timeout
             if (this.youWinTimeoutId) { clearTimeout(this.youWinTimeoutId); this.youWinTimeoutId = null; }
