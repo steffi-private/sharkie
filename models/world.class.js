@@ -128,6 +128,11 @@ class World {
                 this.ouchSound.pause();
                 this.ouchSound.currentTime = 0;
             }
+            // Stop character slap sound
+            if (this.character && this.character.slapSound) {
+                this.character.slapSound.pause();
+                this.character.slapSound.currentTime = 0;
+            }
             // Stop final enemy attack sound
             if (this.level && this.level.finalEnemy) {
                 this.level.finalEnemy.forEach(enemy => {

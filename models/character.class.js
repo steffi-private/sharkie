@@ -6,6 +6,7 @@ class Character extends MovableObject {
     speed =  10;// Default speed
     // when true, the regular animation loop will be paused (used for permanent death frame)
     animationFrozen = false;
+    slapSound = new Audio('audio/rechambering-slap-102112.mp3');
 
     
     IMAGES_IDLE = [
@@ -144,6 +145,7 @@ class Character extends MovableObject {
     playSlapOnce() {
         const imgs = this.IMAGES_SLAP || [];
         if (!imgs.length) { this.slapping = false; return; }
+        
         let k = 0; const fps = 8;
         const prevFrozen = this.animationFrozen;
         this.animationFrozen = true; // prevent regular loops from overwriting
@@ -152,7 +154,18 @@ class Character extends MovableObject {
             if (this.imageCache && this.imageCache[path]) this.img = this.imageCache[path];
             else { const i = new Image(); i.src = path; this.img = i; }
             k++;
-            if (k >= imgs.length) { clearInterval(interval); this.slapping = false; this.animationFrozen = prevFrozen; }
+            if (k >= imgs.length) { 
+                clearInterval(interval); 
+                this.slapping = false; 
+                this.animationFrozen = prevFrozen;
+                
+                // Play slap sound at the end of the animation
+                try {
+                    this.slapSound.currentTime = 0;
+                    this.slapSound.volume = 0.5;
+                    this.slapSound.play().catch(err => console.log('Audio play failed:', err));
+                } catch (e) { /* ignore audio errors */ }
+            }
         }, 1000 / fps);
     }
     
