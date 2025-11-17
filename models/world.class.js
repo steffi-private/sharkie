@@ -277,7 +277,7 @@ class World {
 
     // check if any puffer fish was hit by the character's slap (one-shot)
     checkPufferFishHitBySlap() {
-        if (!this.character || !this.character.slapping) return false;
+        if (!this.character || !this.character.slapHitFrame) return false;
         for (let i = this.level.pufferFishs.length - 1; i >= 0; i--) {
             const fish = this.level.pufferFishs[i];
             if (this.processPufferFishSlapCollision(fish)) return true;

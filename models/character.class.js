@@ -7,6 +7,7 @@ class Character extends MovableObject {
     // when true, the regular animation loop will be paused (used for permanent death frame)
     animationFrozen = false;
     slapSound = new Audio('audio/rechambering-slap-102112.mp3');
+    slapHitFrame = false; // true when slap animation reaches the hit frame
 
     
     IMAGES_IDLE = [
@@ -146,6 +147,7 @@ class Character extends MovableObject {
         const imgs = this.IMAGES_SLAP || [];
         if (!imgs.length) { this.slapping = false; return; }
         
+        this.slapHitFrame = false; // Reset hit frame at start
         let k = 0; const fps = 8;
         const prevFrozen = this.animationFrozen;
         this.animationFrozen = true; // prevent regular loops from overwriting
@@ -158,6 +160,7 @@ class Character extends MovableObject {
                 clearInterval(interval); 
                 this.slapping = false; 
                 this.animationFrozen = prevFrozen;
+                this.slapHitFrame = false; // Reset after animation ends
                 
                 // Play slap sound at the end of the animation
                 try {
@@ -165,6 +168,9 @@ class Character extends MovableObject {
                     this.slapSound.volume = 0.5;
                     this.slapSound.play().catch(err => console.log('Audio play failed:', err));
                 } catch (e) { /* ignore audio errors */ }
+            } else if (k === imgs.length - 1) {
+                // Set hit frame flag on the last frame (when the hit should register)
+                this.slapHitFrame = true;
             }
         }, 1000 / fps);
     }
